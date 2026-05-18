@@ -2,6 +2,16 @@
 
 branch_name="$(git branch --show-current)"
 
+if [ -t 1 ]; then
+  red="$(printf '\033[0;31m')"
+  yellow="$(printf '\033[1;33m')"
+  reset="$(printf '\033[0m')"
+else
+  red=''
+  yellow=''
+  reset=''
+fi
+
 if [ -z "$branch_name" ]; then
   echo "Cannot validate branch name: no current branch found."
   exit 1
@@ -17,22 +27,26 @@ if printf '%s' "$branch_name" | grep -Eq "$pattern"; then
   exit 0
 fi
 
-echo "Invalid branch name: \"$branch_name\""
 echo
-echo "Expected format:"
+echo "${red}Invalid branch name:${reset} \"$branch_name\""
+echo
+echo "${yellow}Why it failed:${reset}"
+echo "  The branch name does not start with an allowed type prefix."
+echo "  It must follow the repository branch naming convention."
+echo
+echo "${yellow}Expected format:${reset}"
 echo "  <type>/<slug>"
 echo "  <type>/<issue>-<slug>"
 echo
-echo "Allowed types:"
+echo "${yellow}Allowed types:${reset}"
 echo "  feat, fix, docs, refactor, test, ci, chore"
 echo
-echo "Examples:"
+echo "${yellow}Examples:${reset}"
 echo "  feat/add-user"
 echo "  feat/123-add-user"
-echo "  fix/login-validation"
-echo "  docs/setup-readme"
 echo
-echo "Rename branch:"
+echo "${yellow}Rename branch:${reset}"
 echo "  git branch -m feat/add-user"
+echo
 
 exit 1
