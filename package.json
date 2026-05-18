@@ -4,5 +4,10 @@
   "version": "1.0.0",
   "workspaces": [],
   "scripts": {
+    "prepare": "husky",
+    "check:branch-name": "sh scripts/git/validate-branch-name.sh"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
   }
 }
