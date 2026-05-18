@@ -243,6 +243,83 @@ Pull request checklist:
 - documentation is updated when behavior or process changed
 - CI checks pass
 
+## Issue, PR, And Commit Roles
+
+Use issues, pull requests, and commits for different purposes.
+
+What goes where:
+
+- `Issue`: describes the goal, context, and requirements
+- `Pull request`: describes what was actually changed and how it was tested
+- `Commit`: describes one technical step in the implementation
+- `PR comments`: capture additional discussion, decisions, or review notes
+
+Issue content should answer:
+
+- what needs to be done
+- why the change is needed
+- what requirements or constraints exist
+
+Pull request content should answer:
+
+- what was implemented
+- what the final result includes
+- how the change was tested
+- which issue is linked or closed
+
+Commit messages should:
+
+- stay short and technical
+- describe one implementation step
+- not replace the PR summary
+
+Recommended rule:
+
+- use the issue for planning
+- use the PR for the result summary
+- use commits for technical history
+- use comments only for extra context or review discussion
+
+When a pull request should have a description:
+
+- almost always
+- even a small PR should include a short summary and testing notes
+
+Suggested PR description format:
+
+```md
+## Summary
+- short result 1
+- short result 2
+
+## Testing
+- tested valid case
+- tested invalid case
+
+Closes #<issue-number>
+```
+
+Example:
+
+```md
+## Summary
+- add commit message validation with commitlint
+- add husky commit-msg hook
+- improve feedback for invalid commit messages
+
+## Testing
+- tested invalid commit message: `added stuff`
+- tested valid commit message: `chore(hooks): add commit message validation`
+
+Closes #6
+```
+
+Do not use:
+
+- commit messages as progress updates
+- the issue as a change log of every small implementation step
+- an empty PR description when the change has non-trivial behavior
+
 ## Local Hooks
 
 Local hooks provide fast feedback before code reaches GitHub.
