@@ -247,11 +247,52 @@ Pull request checklist:
 
 Local hooks provide fast feedback before code reaches GitHub.
 
-Current local automation:
+Execution flow:
 
-- `husky`: manages Git hooks in the repository
-- `pre-commit`: runs local checks before each commit
-- `scripts/git/validate-branch-name.sh`: validates branch naming
+1. `husky` manages local Git hooks in the repository.
+2. When `git commit` runs, `husky` executes `.husky/pre-commit`.
+3. `.husky/pre-commit` runs `scripts/git/validate-branch-name.sh`.
+4. If the branch name is valid, Git continues to the commit message step.
+5. Then `husky` executes `.husky/commit-msg`.
+6. `.husky/commit-msg` runs `scripts/git/validate-commit-message.sh`.
+7. `scripts/git/validate-commit-message.sh` uses `commitlint` to validate the commit message format.
+
+Responsibilities:
+
+- `husky`: connects Git hooks to the repository
+- `.husky/pre-commit`: starts branch validation before the commit is created
+- `.husky/commit-msg`: starts commit message validation
+- `scripts/git/validate-branch-name.sh`: checks whether the current branch follows the branch naming convention
+- `scripts/git/validate-commit-message.sh`: shows user-friendly feedback and runs commit message validation
+- `commitlint`: validates the Conventional Commit structure and allowed commit types
+
+Validation order:
+
+- branch validation runs first
+- if the branch name is invalid, the commit stops before commit message validation
+- if the branch name is valid, commit message validation runs next
+- if the commit message is invalid, the commit is rejected with guidance and examples
+
+Current branch validation behavior:
+
+- allows: `feat/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, `ci/*`, `chore/*`
+- allows optional issue prefix, for example `feat/11-admin-dashboard`
+- shows a short explanation, valid examples, and a rename command when invalid
+
+Current commit validation behavior:
+
+- uses Conventional Commits
+- allows commit types: `feat`, `fix`, `docs`, `refactor`, `test`, `ci`, `chore`
+- supports both `type(scope): message` and `type: message`
+- shows a short explanation and valid examples when invalid
+
+Practical examples:
+
+- valid branch: `chore/6-commit-message-validation`
+- invalid branch: `add-user`
+- valid commit: `chore(hooks): add commit message validation`
+- valid commit: `docs: update workflow guide`
+- invalid commit: `added stuff`
 
 This is local developer tooling, not CI.
 
