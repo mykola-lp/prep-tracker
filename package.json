@@ -5,9 +5,12 @@
   "workspaces": [],
   "scripts": {
     "prepare": "husky",
-    "check:branch-name": "sh scripts/git/validate-branch-name.sh"
+    "check:branch-name": "sh scripts/git/validate-branch-name.sh",
+    "check:commit-message": "commitlint --edit"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "husky": "^9.1.7"
   }
 }
