@@ -2,11 +2,15 @@
   "name": "prep-tracker",
   "private": true,
   "version": "1.0.0",
-  "workspaces": [],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "prepare": "husky",
     "check:branch-name": "sh scripts/git/validate-branch-name.sh",
-    "check:commit-message": "commitlint --edit"
+    "check:commit-message": "commitlint --edit",
+    "dev:web": "npm run dev --workspace @prep-tracker/web",
+    "build:web": "npm run build --workspace @prep-tracker/web"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
