@@ -10,7 +10,8 @@
     "check:branch-name": "sh scripts/git/validate-branch-name.sh",
     "check:commit-message": "commitlint --edit",
     "dev:web": "npm run dev --workspace @prep-tracker/web",
-    "build:web": "npm run build --workspace @prep-tracker/web"
+    "build:web": "npm run build --workspace @prep-tracker/web",
+    "dev:api": "npm run dev --workspace @prep-tracker/api"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
