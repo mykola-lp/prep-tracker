@@ -1,5 +1,12 @@
+import express from 'express';
+
+const app = express();
 const port = Number(process.env.PORT) || 3001;
 
-const message = `API workspace is initialized. Server entry is ready for port ${port}.`;
+app.get('/api/health', (_request, response) => {
+  response.json({ status: 'ok' });
+});
 
-console.log(message);
+app.listen(port, () => {
+  console.log(`API server is running on port ${port}.`);
+});
