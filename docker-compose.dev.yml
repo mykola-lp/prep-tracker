@@ -1,0 +1,42 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/dev.Dockerfile
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    networks:
+      - prep-tracker-network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/dev.Dockerfile
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
+    environment:
+      PORT: ${API_PORT:-3001}
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8080}
+    networks:
+      - prep-tracker-network
+
+  nginx:
+    image: nginx:1.29-alpine
+    container_name: prep-tracker-reverse-proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - api
+    networks:
+      - prep-tracker-network
+
+networks:
+  prep-tracker-network:
+    driver: bridge
