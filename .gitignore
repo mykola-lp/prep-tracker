@@ -17,6 +17,7 @@ test-results
 blob-report
 
 .env
+data/
 
 # Editor directories and files
 .vscode/*

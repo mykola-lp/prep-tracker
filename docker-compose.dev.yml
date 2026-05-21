@@ -1,0 +1,68 @@
+name: prep-tracker-dev
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/dev.Dockerfile
+    image: prep-tracker-web-dev
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      VITE_API_PROXY_TARGET: ${DEV_VITE_API_PROXY_TARGET}
+    ports:
+      - "${DEV_WEB_PORT}:5173"
+    networks:
+      - prep-tracker-network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/dev.Dockerfile
+    image: prep-tracker-api-dev
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
+    environment:
+      PORT: ${DEV_API_PORT}
+      CLIENT_ORIGIN: http://localhost:${DEV_NGINX_PORT}
+      DATABASE_URL: ${DEV_DATABASE_URL}
+    ports:
+      - "${DEV_API_PORT}:${DEV_API_PORT}"
+    depends_on:
+      - postgres
+    networks:
+      - prep-tracker-network
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "${DEV_POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DEV_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DEV_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DEV_POSTGRES_DB}
+    volumes:
+      - ./data/docker/dev/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - prep-tracker-network
+
+  nginx:
+    image: nginx:1.29-alpine
+    container_name: prep-tracker-dev-reverse-proxy
+    ports:
+      - "${DEV_NGINX_PORT}:80"
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - api
+    networks:
+      - prep-tracker-network
+
+networks:
+  prep-tracker-network:
+    driver: bridge

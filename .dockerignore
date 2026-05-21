@@ -1,0 +1,13 @@
+node_modules
+apps/*/node_modules
+apps/*/dist
+.git
+.gitignore
+.husky
+.agents
+.codex
+npm-debug.log*
+docker-compose*.yml
+.env
+apps/*/.env
+data
