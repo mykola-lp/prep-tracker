@@ -14,9 +14,13 @@ export function createPool(databaseUrl) {
   }
 
   const useSsl = shouldEnableSsl(databaseUrl);
+  const normalizedDatabaseUrl = new URL(databaseUrl);
+
+  normalizedDatabaseUrl.searchParams.delete('sslmode');
+  normalizedDatabaseUrl.searchParams.delete('ssl');
 
   return new pg.Pool({
-    connectionString: databaseUrl,
+    connectionString: normalizedDatabaseUrl.toString(),
     ssl: useSsl
       ? {
           rejectUnauthorized: false,
