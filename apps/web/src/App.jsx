@@ -44,8 +44,7 @@ export default function App() {
         <h1>Infrastructure is wired.</h1>
 
         <p className="lead">
-          React talks to Express through GraphQL, with PostgreSQL ready for the
-          first real feature.
+          React talks to Express through GraphQL, with PostgreSQL ready for the first real feature.
         </p>
 
         <dl className="status-grid">
