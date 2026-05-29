@@ -418,3 +418,90 @@ Recommended repository direction:
 - keep CI and CD in separate GitHub Actions workflow files
 - use local hooks for fast feedback
 - use GitHub Actions as the final enforcement layer
+
+## Docker And Compose
+
+The repository uses two Compose stacks: a development stack and a production-like stack.
+
+The current layout is:
+
+```txt
+my-app
+├── web
+│   ├── dev.Dockerfile
+│   └── Dockerfile
+├── api
+│   ├── dev.Dockerfile
+│   └── Dockerfile
+├── nginx.dev.conf
+├── nginx.conf
+├── docker-compose.dev.yml
+└── docker-compose.yml
+```
+
+Basic Compose commands:
+
+- start dev stack: `docker compose -f docker-compose.dev.yml up --build`
+- start production-like stack: `docker compose -f docker-compose.yml up --build`
+- stop dev stack: `docker compose -f docker-compose.dev.yml down`
+- stop production-like stack: `docker compose -f docker-compose.yml down`
+
+Production-like mode uses `docker-compose.yml` and exposes only nginx on `8081`. The web image is built into a static nginx container, the API runs on `3001` inside the network, and PostgreSQL uses the bind mount `./data/docker/prod/postgres -> /var/lib/postgresql/data`.
+
+Development mode uses `docker-compose.dev.yml` and exposes nginx on `8080`, Vite on `5173`, the API on `3001`, and PostgreSQL on `5432`. The web and API containers run with their dev Dockerfiles, and `nginx.dev.conf` proxies browser traffic to the live dev services.
+
+Common environment values are stored in `.env` and `.env.example`. The repo also keeps separate dev and production-like database credentials and connection strings so both stacks can run independently.
+
+Useful verification commands:
+
+- stop and remove the dev stack: `docker compose -f docker-compose.dev.yml down -v --rmi local --remove-orphans`
+- stop and remove the production-like stack: `docker compose -f docker-compose.yml down -v --rmi local --remove-orphans`
+- clean build cache: `docker builder prune -f`
+- start production-like mode: `docker compose -f docker-compose.yml up --build`
+- start development mode: `docker compose -f docker-compose.dev.yml up --build`
+
+Production-like access:
+
+- `http://localhost:8081/api/health`
+- `http://localhost:5173/` is not exposed
+- `http://localhost:3001/` is not exposed
+- `http://localhost:3001/api/health` is not exposed
+
+Development access:
+
+- `http://localhost:8080/`
+- `http://localhost:5173/`
+- `http://localhost:3001/api/health`
+
+Database verification:
+
+- dev PostgreSQL shell: `docker compose -f docker-compose.dev.yml exec postgres psql -U prep_tracker_dev -d prep_tracker_dev`
+- production-like PostgreSQL shell: `docker compose -f docker-compose.yml exec postgres psql -U prep_tracker -d prep_tracker`
+
+Nginx verification:
+
+- `docker compose -f docker-compose.dev.yml exec nginx nginx -t`
+- `docker compose -f docker-compose.yml exec nginx nginx -t`
+
+Persistent database data:
+
+PostgreSQL data is stored with bind mounts so local data survives container rebuilds and restarts.
+
+```txt
+data/
+└── docker/
+    ├── dev/
+    │   └── postgres/
+    └── prod/
+        └── postgres/
+```
+
+Mappings:
+
+```txt
+dev:
+./data/docker/dev/postgres -> /var/lib/postgresql/data
+
+production-like:
+./data/docker/prod/postgres -> /var/lib/postgresql/data
+```
