@@ -11,7 +11,8 @@
     "check:commit-message": "commitlint --edit",
     "dev:web": "npm run dev --workspace @prep-tracker/web",
     "build:web": "npm run build --workspace @prep-tracker/web",
-    "dev:api": "npm run dev --workspace @prep-tracker/api"
+    "dev:api": "npm run dev --workspace @prep-tracker/api",
+    "test:web": "npm run test --workspace @prep-tracker/web"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
