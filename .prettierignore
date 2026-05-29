@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+playwright-report
+test-results
+data
+.git
+.github
+.husky
+.agents
+.codex
+package-lock.json
