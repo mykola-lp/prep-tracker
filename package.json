@@ -13,12 +13,14 @@
     "build:web": "npm run build --workspace @prep-tracker/web",
     "dev:api": "npm run dev --workspace @prep-tracker/api",
     "test:web": "npm run test --workspace @prep-tracker/web",
-    "test:api": "npm run test --workspace @prep-tracker/api"
+    "test:api": "npm run test --workspace @prep-tracker/api",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
+    "@playwright/test": "^1.57.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",

@@ -5,8 +5,10 @@ import path from 'path';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:3001';
+  const cacheDir = env.VITE_CACHE_DIR || 'node_modules/.vite';
 
   return {
+    cacheDir,
     plugins: [react()],
     resolve: {
       alias: {
