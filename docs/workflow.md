@@ -505,3 +505,45 @@ dev:
 production-like:
 ./data/docker/prod/postgres -> /var/lib/postgresql/data
 ```
+
+## Render Setup
+
+The cloud setup is split into separate Render services and environment groups so each service receives only the values it needs.
+
+Render services:
+
+- `prep-tracker-web`: public frontend service
+- `prep-tracker-api`: backend service
+
+Database:
+
+- the API connects to the external Aiven PostgreSQL database
+- the database connection is not stored in the repository
+- the API reads `DATABASE_URL` from Render environment variables
+
+Environment groups:
+
+- `web-connect`: web service environment variables
+- `api-connect`: API service environment variables
+
+Linked values:
+
+- `prep-tracker-web`
+  - `VITE_API_BASE_URL=https://prep-tracker-api.onrender.com/api`
+- `prep-tracker-api`
+  - `DATABASE_URL=postgres://avnadmin:...@pg-12d07f72-mykola-d704.l.aivencloud.com:20476/defaultdb?sslmode=require`
+  - `PORT=3001`
+  - `CLIENT_ORIGIN=https://prep-tracker-web.onrender.com`
+
+Render UI flow:
+
+1. Create the environment group.
+2. Add the service-specific variables to the group or service settings.
+3. Link the environment group to the matching Render service.
+4. Redeploy the service so the new values take effect.
+
+Render environment variable workflow:
+
+- [Render docs](https://render.com/docs/configure-environment-variables)
+- use the Render dashboard for service-level values and linked environment groups
+- keep secrets like `DATABASE_URL` out of git
