@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [Build and test]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
+
+    steps:
+      - name: Trigger API deployment
+        env:
+          RENDER_API_DEPLOY_HOOK_URL: ${{ secrets.RENDER_API_DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "$RENDER_API_DEPLOY_HOOK_URL"
+
+      - name: Trigger WEB deployment
+        env:
+          RENDER_WEB_DEPLOY_HOOK_URL: ${{ secrets.RENDER_WEB_DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "$RENDER_WEB_DEPLOY_HOOK_URL"

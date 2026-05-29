@@ -1,5 +1,5 @@
 :root {
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
   color: #f4f7fb;
   background:
     radial-gradient(circle at top, rgba(88, 166, 255, 0.35), transparent 40%),
@@ -19,7 +19,7 @@ body {
 }
 
 code {
-  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 .app-shell {
