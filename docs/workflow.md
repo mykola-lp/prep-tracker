@@ -320,6 +320,24 @@ Do not use:
 - the issue as a change log of every small implementation step
 - an empty PR description when the change has non-trivial behavior
 
+## Testing
+
+The repository splits tests by runtime and purpose so they can be run independently or together during development and review.
+
+Frontend tests live in `apps/web` and use `Vitest`, `jsdom`, `@testing-library/react`, and `@testing-library/jest-dom`. They are focused on React component and UI behavior checks, and the local command is `npm run test:web`.
+
+Backend tests live in `apps/api` and use `Vitest` together with `supertest`. They cover API behavior through HTTP and GraphQL endpoints, and the local command is `npm run test:api`.
+
+End-to-end tests live in `e2e/playwright` and use `Playwright`. They validate the application flow from the browser, and the local command is `npm run test:e2e`.
+
+Useful test commands:
+
+- `npm run test:web`
+- `npm run test:api`
+- `npm run test:e2e`
+
+When changing behavior that affects multiple parts of the system, update the relevant test layer first and make sure the matching command passes before opening or merging a pull request.
+
 ## Local Hooks
 
 Local hooks provide fast feedback before code reaches GitHub.
