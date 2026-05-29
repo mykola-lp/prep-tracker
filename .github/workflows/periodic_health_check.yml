@@ -1,0 +1,20 @@
+name: Periodic health check
+
+on:
+  workflow_dispatch:
+  # Enable this schedule when periodic checks should run automatically once per day.
+  # schedule:
+  #   - cron: '0 5 * * *'
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check deployed service health
+        uses: jtalk/url-health-check-action@v4
+        with:
+          url: https://prep-tracker-api.onrender.com/api/health
+          follow-redirect: true
+          max-attempts: 3
+          retry-delay: 10s
