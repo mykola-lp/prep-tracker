@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
 sh scripts/git/validate-branch-name.sh
+sh scripts/git/validate-formatting.sh
