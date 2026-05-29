@@ -1,11 +1,13 @@
 import cors from 'cors';
 import express from 'express';
 import { graphql, buildSchema } from 'graphql';
-import pg from 'pg';
+
+import { createPool } from './db.js';
 
 const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 const databaseUrl = process.env.DATABASE_URL;
-const pool = databaseUrl ? new pg.Pool({ connectionString: databaseUrl }) : null;
+
+const pool = createPool(databaseUrl);
 
 const schema = buildSchema(`
   type Health {
