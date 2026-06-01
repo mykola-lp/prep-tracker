@@ -2,6 +2,71 @@
 
 This document describes the working conventions for the repository: issue structure, labels, branch naming, commit naming, pull requests, and delivery flow.
 
+## Repo Map
+
+Use this section as the first stop when you need to understand where a change belongs.
+
+Core areas:
+
+- `apps/web`: the React frontend
+- `apps/api`: the Express and GraphQL backend
+- `e2e/playwright`: browser-level end-to-end tests
+- `docker-compose.dev.yml`: local development stack
+- `docker-compose.yml`: production-like local stack
+- `.github/workflows`: CI and deployment automation
+- `docs/`: repository documentation
+
+Common change paths:
+
+- UI changes usually start in `apps/web`
+- API, GraphQL, and database-related changes usually start in `apps/api`
+- local environment or container behavior usually starts in Docker or compose files
+- workflow and process changes usually start in `docs/workflow.md`
+- deployment-related changes usually start in `.github/workflows` or Render configuration
+
+## Environment Summary
+
+Keep a short overview here so both humans and agents can quickly understand the moving parts.
+
+Local environment:
+
+- frontend runs through Vite in `apps/web`
+- backend runs through Express in `apps/api`
+- tests are split by runtime and can be run independently
+- Docker provides both dev and production-like stacks
+
+Deployment environment:
+
+- Render hosts the public web and API services
+- the API reads `DATABASE_URL` from environment variables
+- the frontend receives `VITE_API_BASE_URL`
+- database credentials should stay out of git
+
+External dependencies:
+
+- PostgreSQL is required for database-backed behavior
+- Render environment groups are used to separate service-specific variables
+- Aiven is the external PostgreSQL provider referenced in this setup
+
+How to read this section:
+
+- use it as a fast overview before diving into the full workflow
+- expand the detailed sections above when you need implementation steps
+- keep the summary short enough that it remains useful during onboarding
+
+## AI / Agent Usage
+
+Use this document as shared context for both humans and AI agents.
+
+- agents like Codex or Copilot should follow the same repository rules as humans
+- read `Repo Map` and `Environment Summary` first before changing anything
+- prefer the smallest section that matches the task
+- use docs for process and context, and use code for behavior
+- update docs when workflow, commands, or environment details change
+- keep code changes and documentation changes aligned when a process changes
+- do not duplicate rules across sections unless the same rule must apply in more than one place
+- when a detail is still evolving, treat the matching note in `Decision Notes` as the source of truth
+
 ## Issue Structure
 
 Use GitHub issues for planning and tracking work.
@@ -261,10 +326,12 @@ Suggested PR description format:
 
 ```md
 ## Summary
+
 - short result 1
 - short result 2
 
 ## Testing
+
 - tested valid case
 - tested invalid case
 
@@ -275,11 +342,13 @@ Example:
 
 ```md
 ## Summary
+
 - add commit message validation with commitlint
 - add husky commit-msg hook
 - improve feedback for invalid commit messages
 
 ## Testing
+
 - tested invalid commit message: `added stuff`
 - tested valid commit message: `chore(hooks): add commit message validation`
 
@@ -547,3 +616,45 @@ Render environment variable workflow:
 - [Render docs](https://render.com/docs/configure-environment-variables)
 - use the Render dashboard for service-level values and linked environment groups
 - keep secrets like `DATABASE_URL` out of git
+
+## Docs Maintenance
+
+This document should stay current when the repository workflow changes.
+
+Update this document when:
+
+- branch naming rules change
+- commit format rules change
+- pull request flow changes
+- testing commands change
+- local hook behavior changes
+- Docker, compose, or Render setup changes
+
+Maintenance rules:
+
+- keep process changes close to the section they affect
+- do not split related rules across multiple places unless the section becomes too long
+- prefer updating examples when behavior changes
+- keep the document readable for humans first, while still making it easy for AI agents to follow
+
+## Decision Notes
+
+Use this section for stable decisions and for things that are still in draft.
+
+Decision states:
+
+- `final`: the rule is settled and should be followed
+- `draft`: the rule is still being explored and may change
+- `needs-review`: the rule is likely correct but should be checked before it is treated as final
+
+Suggested usage:
+
+- put stable workflow rules in the main sections above
+- put evolving decisions here until they are ready to move into a final section
+- avoid using issue comments as the only place where important repository decisions live
+
+Examples of good notes:
+
+- `final`: branch names should follow `<type>/<issue-number>-<short-slug>`
+- `final`: PRs should usually include a short summary and testing notes
+- `draft`: the docs structure may later be split into topic-based files
