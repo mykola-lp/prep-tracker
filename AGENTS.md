@@ -20,7 +20,8 @@ Prefer these files in this order:
 1. `package.json` for commands
 2. `docs/workflow.md` for repo process and collaboration rules
 3. `AGENTS.md` for agent behavior and repo-wide constraints
-4. `README.md` when it exists for onboarding
+4. `CLAUDE.md` for Claude Code adapter instructions
+5. `README.md` when it exists for onboarding
 
 Do not duplicate the same rule in multiple places unless a tool requires a
 tool-specific adapter.
