@@ -215,34 +215,6 @@ Avoid:
 - `feat(admin): working on dashboard`
 - `fix: stuff`
 
-## Pull Request Flow
-
-The repository uses pull requests to merge work into `main`.
-
-Recommended flow:
-
-1. Create or refine the GitHub issue.
-2. Create a branch from `main`.
-3. Make focused commits using Conventional Commits.
-4. Push the branch.
-5. Open a pull request.
-6. Add the relevant labels before review.
-7. Use squash merge after review or self-review.
-
-Pull request title:
-
-- prefer the same style as the final squash commit
-- example: `feat(admin): add dashboard layout`
-
-Pull request checklist:
-
-- linked to an issue when possible
-- labels match the work area and priority
-- branch name follows the convention
-- commits are clear and focused
-- documentation is updated when behavior or process changed
-- CI checks pass
-
 ## Issue, PR, And Commit Roles
 
 Use issues, pull requests, and commits for different purposes.
@@ -319,6 +291,34 @@ Do not use:
 - commit messages as progress updates
 - the issue as a change log of every small implementation step
 - an empty PR description when the change has non-trivial behavior
+
+## Pull Request Flow
+
+The repository uses pull requests to merge work into `main`.
+
+Recommended flow:
+
+1. Create or refine the GitHub issue.
+2. Create a branch from `main`.
+3. Make focused commits using Conventional Commits.
+4. Push the branch.
+5. Open a pull request.
+6. Add the relevant labels before review.
+7. Use squash merge after review or self-review.
+
+Pull request title:
+
+- prefer the same style as the final squash commit
+- example: `feat(admin): add dashboard layout`
+
+Pull request checklist:
+
+- linked to an issue when possible
+- labels match the work area and priority
+- branch name follows the convention
+- commits are clear and focused
+- documentation is updated when behavior or process changed
+- CI checks pass
 
 ## Testing
 
