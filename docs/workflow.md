@@ -2,91 +2,43 @@
 
 This document describes the working conventions for the repository: issue structure, labels, branch naming, commit naming, pull requests, and delivery flow.
 
+## Repository Conventions
+
+Source of truth order:
+
+- use `package.json` for commands
+- use `AGENTS.md` for agent behavior and repository rules
+- use `docs/` for workflow and deeper context
+- use `README.md` for quick onboarding
+
+Consistency rules:
+
+- do not describe the same command differently in multiple files
+- do not repeat policy text in both `README.md` and `AGENTS.md`
+- keep `AGENTS.md` short and point to detailed docs when needed
+- update the owning file first when a shared rule changes
+- prefer one canonical source over several manually maintained copies
+
 ## Repo Map
 
-Use this section as the first stop when you need to understand where a change belongs.
+Use this section first when you need to understand where a change belongs.
 
 Core areas:
 
-- `apps/web`: the React frontend
-- `apps/api`: the Express and GraphQL backend
-- `e2e/playwright`: browser-level end-to-end tests
-- `docker-compose.dev.yml`: local development stack
-- `docker-compose.yml`: production-like local stack
+- `apps/web`: React frontend
+- `apps/api`: Express and GraphQL backend
+- `e2e/playwright`: end-to-end tests
+- `docker-compose.dev.yml`: development stack
+- `docker-compose.yml`: production-like stack
 - `.github/workflows`: CI and deployment automation
 - `docs/`: repository documentation
 
-Common change paths:
+Local environment: [`draft`] remove or add better explanation
 
-- UI changes usually start in `apps/web`
-- API, GraphQL, and database-related changes usually start in `apps/api`
-- local environment or container behavior usually starts in Docker or compose files
-- workflow and process changes usually start in `docs/workflow.md`
-- deployment-related changes usually start in `.github/workflows` or Render configuration
-
-## Environment Summary
-
-Keep a short overview here so both humans and agents can quickly understand the moving parts.
-
-Local environment:
-
-- frontend runs through Vite in `apps/web`
-- backend runs through Express in `apps/api`
-- tests are split by runtime and can be run independently
+- `apps/web` runs the Vite frontend
+- `apps/api` runs the Express and GraphQL backend
+- tests are split by runtime and can run independently
 - Docker provides both dev and production-like stacks
-
-Deployment environment:
-
-- Render hosts the public web and API services
-- the API reads `DATABASE_URL` from environment variables
-- the frontend receives `VITE_API_BASE_URL`
-- database credentials should stay out of git
-
-External dependencies:
-
-- PostgreSQL is required for database-backed behavior
-- Render environment groups are used to separate service-specific variables
-- Aiven is the external PostgreSQL provider referenced in this setup
-
-How to read this section:
-
-- use it as a fast overview before diving into the full workflow
-- expand the detailed sections above when you need implementation steps
-- keep the summary short enough that it remains useful during onboarding
-
-## AI / Agent Usage
-
-Use this document as shared context for both humans and AI agents.
-
-- agents like Codex or Copilot should follow the same repository rules as humans
-- read `Repo Map` and `Environment Summary` first before changing anything
-- prefer the smallest section that matches the task
-- use docs for process and context, and use code for behavior
-- update docs when workflow, commands, or environment details change
-- keep code changes and documentation changes aligned when a process changes
-- do not duplicate rules across sections unless the same rule must apply in more than one place
-- when a detail is still evolving, treat the matching note in `Decision Notes` as the source of truth
-
-## Issue Structure
-
-Use GitHub issues for planning and tracking work.
-
-Recommended hierarchy:
-
-- `Epic`: a large initiative with multiple related tasks
-- `Task`: a concrete implementation step
-
-Do not duplicate the issue type in both the title and a label.
-
-Preferred:
-
-- Title: `Admin Dashboard`
-- Label: `type:epic`
-
-Avoid:
-
-- Title: `[Epic] Admin Dashboard`
-- Label: `type:epic`
 
 ## Labels
 
@@ -180,6 +132,25 @@ Example label combinations:
   - `work:bug`
   - `area:frontend`
   - `priority:high`
+
+## Issue Structure
+
+Use GitHub issues to track work.
+
+- `Epic`: a larger initiative
+- `Task`: a single implementation step
+
+Keep the title and label focused on different things.
+
+Preferred:
+
+- Title: `Admin Dashboard`
+- Label: `type:epic`
+
+Avoid:
+
+- Title: `[Epic] Admin Dashboard`
+- Label: `type:epic`
 
 ## Branch Naming
 
@@ -280,7 +251,7 @@ Avoid:
 - `feat(admin): working on dashboard`
 - `fix: stuff`
 
-## Issue, PR, And Commit Roles
+## Issue, PR, and Commit Roles [`final`]
 
 Use issues, pull requests, and commits for different purposes.
 
@@ -315,22 +286,27 @@ Recommended rule:
 - use the issue for planning
 - use the PR for the result summary
 - use commits for technical history
-- use comments only for extra context or review discussion
+- use comments only for extra context or review
 
-When a pull request should have a description:
+## Issue description format [`draft`] add rules
 
-- almost always
-- even a small PR should include a short summary and testing notes
+Use this format to keep issues clear about the goal, context, and constraints.
 
-Suggested PR description format:
+## PR Description Format [`needs-review`]
+
+Use this format to keep the PR description short, readable, and focused on the result. It should explain what changed, how it was tested, and which issue it relates to.
 
 ```md
-## Summary
+## What changed
 
 - short result 1
 - short result 2
 
-## Testing
+## Why
+
+Short reason for the change.
+
+## How tested
 
 - tested valid case
 - tested invalid case
@@ -341,13 +317,17 @@ Closes #<issue-number>
 Example:
 
 ```md
-## Summary
+## What changed
 
 - add commit message validation with commitlint
 - add husky commit-msg hook
 - improve feedback for invalid commit messages
 
-## Testing
+## Why
+
+To make commit message validation automatic and easier to understand when it fails.
+
+## How tested
 
 - tested invalid commit message: `added stuff`
 - tested valid commit message: `chore(hooks): add commit message validation`
@@ -355,13 +335,7 @@ Example:
 Closes #6
 ```
 
-Do not use:
-
-- commit messages as progress updates
-- the issue as a change log of every small implementation step
-- an empty PR description when the change has non-trivial behavior
-
-## Pull Request Flow
+## Pull Request Flow [`final`]
 
 The repository uses pull requests to merge work into `main`.
 
@@ -377,8 +351,9 @@ Recommended flow:
 
 Pull request title:
 
-- prefer the same style as the final squash commit
-- example: `feat(admin): add dashboard layout`
+- prefer the same style as the final squash task/issue title
+
+Example: `Add dashboard layout` or `Dashboard layout`
 
 Pull request checklist:
 
@@ -389,7 +364,7 @@ Pull request checklist:
 - documentation is updated when behavior or process changed
 - CI checks pass
 
-## Testing
+## Testing [`draft`] re-write
 
 The repository splits tests by runtime and purpose so they can be run independently or together during development and review.
 
@@ -407,7 +382,7 @@ Useful test commands:
 
 When changing behavior that affects multiple parts of the system, update the relevant test layer first and make sure the matching command passes before opening or merging a pull request.
 
-## Local Hooks
+## Local Hooks [`needs-review`] && code refactor
 
 Local hooks provide fast feedback before code reaches GitHub.
 
@@ -416,26 +391,29 @@ Execution flow:
 1. `husky` manages local Git hooks in the repository.
 2. When `git commit` runs, `husky` executes `.husky/pre-commit`.
 3. `.husky/pre-commit` runs `scripts/git/validate-branch-name.sh`.
-4. If the branch name is valid, Git continues to the commit message step.
-5. Then `husky` executes `.husky/commit-msg`.
-6. `.husky/commit-msg` runs `scripts/git/validate-commit-message.sh`.
-7. `scripts/git/validate-commit-message.sh` uses `commitlint` to validate the commit message format.
+4. If the branch name is valid, `.husky/pre-commit` runs `scripts/git/validate-formatting.sh`.
+5. If formatting passes, Git continues to the commit message step.
+6. Then `husky` executes `.husky/commit-msg`.
+7. `.husky/commit-msg` runs `scripts/git/validate-commit-message.sh`.
+8. `scripts/git/validate-commit-message.sh` uses `commitlint` to validate the commit message format.
 
 Responsibilities:
 
 - `husky`: connects Git hooks to the repository
-- `.husky/pre-commit`: starts branch validation before the commit is created
+- `.husky/pre-commit`: starts branch validation and formatting checks
 - `.husky/commit-msg`: starts commit message validation
 - `scripts/git/validate-branch-name.sh`: checks whether the current branch follows the branch naming convention
+- `scripts/git/validate-formatting.sh`: checks formatting with Prettier and suggests `npm run format`
 - `scripts/git/validate-commit-message.sh`: shows user-friendly feedback and runs commit message validation
 - `commitlint`: validates the Conventional Commit structure and allowed commit types
 
 Validation order:
 
 - branch validation runs first
-- if the branch name is invalid, the commit stops before commit message validation
-- if the branch name is valid, commit message validation runs next
-- if the commit message is invalid, the commit is rejected with guidance and examples
+- if the branch name is valid, formatting check runs next
+- if formatting passes, commit message validation runs last
+- if the branch name is invalid, the commit stops before the next checks
+- `main` is exempt from branch-name validation
 
 Current branch validation behavior:
 
@@ -462,7 +440,7 @@ This is local developer tooling, not CI.
 
 If the workflow changes later, update this document and the related scripts together.
 
-## CI / CD Overview
+## CI / CD Overview [`draft`] re-write
 
 CI and CD are related but different.
 
@@ -488,20 +466,21 @@ Recommended repository direction:
 - use local hooks for fast feedback
 - use GitHub Actions as the final enforcement layer
 
-## Docker And Compose
+## Docker Setup [`final`]
 
-The repository uses two Compose stacks: a development stack and a production-like stack.
+The repository uses two Docker Compose stacks: development and production-like.
 
-The current layout is:
+Current layout:
 
 ```txt
-my-app
-├── web
-│   ├── dev.Dockerfile
-│   └── Dockerfile
-├── api
-│   ├── dev.Dockerfile
-│   └── Dockerfile
+prep-tracker
+├── apps
+│   ├── web
+│   │   ├── dev.Dockerfile
+│   │   └── Dockerfile
+│   └── api
+│       ├── dev.Dockerfile
+│       └── Dockerfile
 ├── nginx.dev.conf
 ├── nginx.conf
 ├── docker-compose.dev.yml
@@ -510,47 +489,53 @@ my-app
 
 Basic Compose commands:
 
-- start dev stack: `docker compose -f docker-compose.dev.yml up --build`
-- start production-like stack: `docker compose -f docker-compose.yml up --build`
-- stop dev stack: `docker compose -f docker-compose.dev.yml down`
-- stop production-like stack: `docker compose -f docker-compose.yml down`
+Development:
 
-Production-like mode uses `docker-compose.yml` and exposes only nginx on `8081`. The web image is built into a static nginx container, the API runs on `3001` inside the network, and PostgreSQL uses the bind mount `./data/docker/prod/postgres -> /var/lib/postgresql/data`.
+- `docker compose -f docker-compose.dev.yml up --build` - start dev stack
+- `docker compose -f docker-compose.dev.yml down` - stop dev stack
 
-Development mode uses `docker-compose.dev.yml` and exposes nginx on `8080`, Vite on `5173`, the API on `3001`, and PostgreSQL on `5432`. The web and API containers run with their dev Dockerfiles, and `nginx.dev.conf` proxies browser traffic to the live dev services.
+Production-like:
 
-Common environment values are stored in `.env` and `.env.example`. The repo also keeps separate dev and production-like database credentials and connection strings so both stacks can run independently.
+- `docker compose -f docker-compose.yml up --build` - start production-like stack
+- `docker compose -f docker-compose.yml down` - stop production-like stack
 
-Useful verification commands:
+Mode overview:
 
-- stop and remove the dev stack: `docker compose -f docker-compose.dev.yml down -v --rmi local --remove-orphans`
-- stop and remove the production-like stack: `docker compose -f docker-compose.yml down -v --rmi local --remove-orphans`
-- clean build cache: `docker builder prune -f`
-- start production-like mode: `docker compose -f docker-compose.yml up --build`
-- start development mode: `docker compose -f docker-compose.dev.yml up --build`
+- Development uses `docker-compose.dev.yml`, exposes nginx on `8080`, Vite on `5173`, the API on `3001`, and PostgreSQL on `5432`, and `nginx.dev.conf` proxies browser traffic to the live services.
+- Production-like uses `docker-compose.yml`, exposes nginx on `8081`, builds the web app into a static nginx container, and runs the API on `3001` inside the network.
+- Development uses the `dev.Dockerfile` files for the frontend and backend.
+- Production-like local builds and Render builds use separate production `Dockerfile` files for `web` and `api`.
+- Common environment values live in `.env` and `.env.example`.
+- Dev and production-like database credentials stay separate so the stacks can run independently.
 
-Production-like access:
+Development access: [`needs-review`] to check
+
+- `http://localhost:8080/`
+- `http://localhost:5173/`
+- `http://localhost:3001/api/health`
+
+Production-like access: [`needs-review`] to check
 
 - `http://localhost:8081/api/health`
 - `http://localhost:5173/` is not exposed
 - `http://localhost:3001/` is not exposed
 - `http://localhost:3001/api/health` is not exposed
 
-Development access:
-
-- `http://localhost:8080/`
-- `http://localhost:5173/`
-- `http://localhost:3001/api/health`
-
 Database verification:
 
-- dev PostgreSQL shell: `docker compose -f docker-compose.dev.yml exec postgres psql -U prep_tracker_dev -d prep_tracker_dev`
-- production-like PostgreSQL shell: `docker compose -f docker-compose.yml exec postgres psql -U prep_tracker -d prep_tracker`
+- `docker compose -f docker-compose.dev.yml exec postgres psql -U prep_tracker_dev -d prep_tracker_dev` - open the dev PostgreSQL shell
+- `docker compose -f docker-compose.yml exec postgres psql -U prep_tracker -d prep_tracker` - open the production-like PostgreSQL shell
 
 Nginx verification:
 
-- `docker compose -f docker-compose.dev.yml exec nginx nginx -t`
-- `docker compose -f docker-compose.yml exec nginx nginx -t`
+- `docker compose -f docker-compose.dev.yml exec nginx nginx -t` - validate the dev Nginx config
+- `docker compose -f docker-compose.yml exec nginx nginx -t` - validate the production-like Nginx config
+
+Other useful commands:
+
+- `docker compose -f docker-compose.dev.yml down -v --rmi local --remove-orphans` - stop and remove the dev stack
+- `docker compose -f docker-compose.yml down -v --rmi local --remove-orphans` - stop and remove the production-like stack
+- `docker builder prune -f` - clean build cache
 
 Persistent database data:
 
@@ -575,14 +560,15 @@ production-like:
 ./data/docker/prod/postgres -> /var/lib/postgresql/data
 ```
 
-## Render Setup
+## Render Setup (production) [`final`]
 
 The cloud setup is split into separate Render services and environment groups so each service receives only the values it needs.
 
 Render services:
 
-- `prep-tracker-web`: public frontend service
+- `prep-tracker-web`: frontend service
 - `prep-tracker-api`: backend service
+- both services build from the production `Dockerfile` for `web` and `api` (separate files)
 
 Database:
 
@@ -597,31 +583,21 @@ Environment groups:
 
 Linked values:
 
-- `prep-tracker-web`
-  - `VITE_API_BASE_URL=https://prep-tracker-api.onrender.com/api`
-- `prep-tracker-api`
-  - `DATABASE_URL=postgres://avnadmin:...@pg-12d07f72-mykola-d704.l.aivencloud.com:20476/defaultdb?sslmode=require`
-  - `PORT=3001`
-  - `CLIENT_ORIGIN=https://prep-tracker-web.onrender.com`
+`prep-tracker-web`
 
-Render UI flow:
+- `VITE_API_BASE_URL=https://prep-tracker-api.onrender.com/api`
 
-1. Create the environment group.
-2. Add the service-specific variables to the group or service settings.
-3. Link the environment group to the matching Render service.
-4. Redeploy the service so the new values take effect.
+`prep-tracker-api`
 
-Render environment variable workflow:
+- `DATABASE_URL=postgres://avnadmin:...@pg-12d07f72-mykola-d704.l.aivencloud.com:20476/defaultdb?sslmode=require`
+- `PORT=3001`
+- `CLIENT_ORIGIN=https://prep-tracker-web.onrender.com`
 
-- [Render docs](https://render.com/docs/configure-environment-variables)
-- use the Render dashboard for service-level values and linked environment groups
-- keep secrets like `DATABASE_URL` out of git
-
-## Docs Maintenance
+## Docs Maintenance [`final`]
 
 This document should stay current when the repository workflow changes.
 
-Update this document when:
+Update this document when: [`needs-review`] add new items, verify the wording with the final workflow
 
 - branch naming rules change
 - commit format rules change
@@ -633,28 +609,32 @@ Update this document when:
 Maintenance rules:
 
 - keep process changes close to the section they affect
+- one section = one topic or one task
 - do not split related rules across multiple places unless the section becomes too long
+- prefer short sentences and lists instead of large paragraphs
+- explain what it is and why first
+- then explain where it is or how to use it
 - prefer updating examples when behavior changes
+- avoid repeating the same information across README, AGENTS.md, and docs/
 - keep the document readable for humans first, while still making it easy for AI agents to follow
+- be clear, friendly, and direct
 
-## Decision Notes
+## Decision Notes [`final`]
 
-Use this section for stable decisions and for things that are still in draft.
+Use this section for decisions that are still changing.
 
 Decision states:
 
-- `final`: the rule is settled and should be followed
-- `draft`: the rule is still being explored and may change
-- `needs-review`: the rule is likely correct but should be checked before it is treated as final
+- [`draft`] - still being explored or may be split further
+- [`needs-review`] - likely correct but not final yet
+- [`final`] - settled and ready to follow
 
-Suggested usage:
+You can add a short note after the status to explain what should change.
 
-- put stable workflow rules in the main sections above
-- put evolving decisions here until they are ready to move into a final section
-- avoid using issue comments as the only place where important repository decisions live
+Examples:
 
-Examples of good notes:
+- [`draft`]: split this section into smaller logical parts
+- [`needs-review`]: verify the wording with the final workflow
+- [`final`]: no further changes needed unless the process changes
 
-- `final`: branch names should follow `<type>/<issue-number>-<short-slug>`
-- `final`: PRs should usually include a short summary and testing notes
-- `draft`: the docs structure may later be split into topic-based files
+Remove temporary notes after the decision becomes [`final`].
