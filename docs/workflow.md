@@ -292,6 +292,138 @@ Recommended rule:
 
 Use this format to keep issues clear about the goal, context, and constraints.
 
+Recommended issue body (epic):
+
+```md
+## Summary
+
+Short description of the goal in one or two sentences.
+
+## Context
+
+Explain why this issue exists and what problem it solves.
+
+## Scope
+
+- what is included
+- what is not included
+- any important constraints
+
+## Requirements
+
+- concrete conditions that must be true
+- technical or product constraints
+
+## Acceptance Criteria
+
+- measurable outcome 1
+- measurable outcome 2
+- measurable outcome 3
+
+## Notes
+
+Optional details, links, or follow-up context.
+```
+
+Example:
+
+```md
+## Summary
+
+Build the first production-ready version of Prep Tracker as the main product foundation.
+
+## Context
+
+Interview preparation is often split across notes, bookmarks, and temporary todo lists.
+This epic defines the initial product scope for organizing topics, questions, notes, deadlines, and progress in one place.
+
+## Scope
+
+- authentication and user-specific data access
+- topic management
+- question tracking under topics
+- notes
+- progress statuses
+- deadlines
+- tags and filtering
+- dashboard overview
+
+Not included:
+
+- Kubernetes deployment
+- public sharing
+- multi-user collaboration
+- advanced analytics
+
+## Requirements
+
+- the app must support a clear frontend and backend separation
+- the data model must support future expansion without a major rewrite
+- the main flows must be testable
+
+## Acceptance Criteria
+
+- a user can sign in and work only with their own data
+- a user can create and manage study topics
+- a user can add questions and notes to a topic
+- a user can mark progress and deadlines
+- a user can filter items and view a dashboard summary
+
+## Notes
+
+Implementation details should be split into separate task issues.
+```
+
+Recommended issue body (task):
+
+```md
+**Goal:**
+
+Describe the main purpose of this feature and what user problem it solves.
+
+**What to do:**
+
+List the functional requirements or tasks that must be implemented.
+
+**Technologies:**
+
+List technologies, libraries, databases, frameworks, or tools expected for implementation.
+
+**Done when:**
+
+Define acceptance criteria.
+```
+
+Example:
+
+```md
+**Goal:** help users organize prep content and find related items quickly.
+
+**What to do:**
+
+- create tags that can be assigned to topics, questions, or notes
+- support adding and removing tags from items
+- support listing items by tag
+- add filtering by tag and by content state
+- keep tag ownership user-specific
+- ensure the tag model can grow without complicating the schema too early
+
+**Technologies:**
+
+- GraphQL queries and mutations
+- Sequelize many-to-many relations
+- PostgreSQL
+- Vitest
+- Supertest
+
+**Done when:**
+
+- users can create and assign tags
+- users can filter content by tag
+- tag data stays isolated per user
+- the implementation supports future search or category features
+```
+
 ## PR Description Format [`needs-review`]
 
 Use this format to keep the PR description short, readable, and focused on the result. It should explain what changed, how it was tested, and which issue it relates to.
