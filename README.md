@@ -20,6 +20,12 @@ Create your local environment file from the example:
 cp .env.example .env
 ```
 
+Run database migrations after PostgreSQL is available:
+
+```bash
+npm run db:migrate
+```
+
 ## Run Locally
 
 Start both apps:

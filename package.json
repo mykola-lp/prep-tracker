@@ -14,6 +14,7 @@
     "dev:web": "npm run dev --workspace @prep-tracker/web",
     "build:web": "npm run build --workspace @prep-tracker/web",
     "dev:api": "npm run dev --workspace @prep-tracker/api",
+    "db:migrate": "npm run db:migrate --workspace @prep-tracker/api",
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
     "test:web": "npm run test --workspace @prep-tracker/web",
     "test:api": "npm run test --workspace @prep-tracker/api",

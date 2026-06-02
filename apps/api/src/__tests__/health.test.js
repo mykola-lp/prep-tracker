@@ -4,7 +4,11 @@ import { describe, expect, test } from 'vitest';
 import { createApp } from '../app.js';
 
 describe('health endpoints', () => {
-  const server = http.createServer(createApp());
+  const server = http.createServer(
+    createApp({
+      databaseUrl: null,
+    })
+  );
 
   test('returns REST health status', async () => {
     const response = await request(server).get('/api/health').expect(200);

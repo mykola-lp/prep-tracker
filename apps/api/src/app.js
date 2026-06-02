@@ -1,13 +1,10 @@
 import cors from 'cors';
 import express from 'express';
-import { graphql, buildSchema } from 'graphql';
+import { buildSchema, graphql } from 'graphql';
 
-import { createPool } from './db.js';
-
-const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
-const databaseUrl = process.env.DATABASE_URL;
-
-const pool = createPool(databaseUrl);
+import { CLIENT_ORIGIN, DATABASE_URL } from './utils/config.js';
+import { createSequelize } from './utils/db.js';
+import { initModels } from './models/index.js';
 
 const schema = buildSchema(`
   type Health {
@@ -21,22 +18,27 @@ const schema = buildSchema(`
   }
 `);
 
-async function getDatabaseStatus() {
-  if (!pool) {
-    return 'not_configured';
-  }
-
-  try {
-    await pool.query('select 1');
-    return 'ok';
-  } catch (error) {
-    console.error('Database health check failed:', error.message);
-    return 'error';
-  }
-}
-
-export function createApp() {
+export function createApp({ clientOrigin = CLIENT_ORIGIN, databaseUrl = DATABASE_URL } = {}) {
   const app = express();
+  const sequelize = createSequelize(databaseUrl);
+
+  if (sequelize) {
+    initModels(sequelize);
+  }
+
+  async function getDatabaseStatus() {
+    if (!sequelize) {
+      return 'not_configured';
+    }
+
+    try {
+      await sequelize.authenticate();
+      return 'ok';
+    } catch (error) {
+      console.error('Database health check failed:', error.message);
+      return 'error';
+    }
+  }
 
   app.use(
     cors({
