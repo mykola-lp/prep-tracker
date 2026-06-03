@@ -5,7 +5,7 @@ import { createApp } from './app.js';
 const sequelize = createSequelize(DATABASE_URL);
 await connectToDatabase(sequelize);
 
-const app = createApp({ databaseUrl: DATABASE_URL });
+const app = createApp();
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

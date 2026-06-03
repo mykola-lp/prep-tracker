@@ -721,7 +721,7 @@ Linked values:
 
 `prep-tracker-api`
 
-- `DATABASE_URL=postgres://avnadmin:...@pg-12d07f72-mykola-d704.l.aivencloud.com:20476/defaultdb?sslmode=require`
+- `DATABASE_URL=postgres://prep_tracker:...@pg-12d07f72-mykola-d704.l.aivencloud.com:20476/prep_tracker?sslmode=require`
 - `PORT=3001`
 - `CLIENT_ORIGIN=https://prep-tracker-web.onrender.com`
 
@@ -784,3 +784,32 @@ The `package.json` file contains:
 ```
 
 All JavaScript files use the ESM syntax with `import` and `export`. The project does not use CommonJS (`require` or `module.exports`). Standard `.js` file extensions are used instead of `.mjs`.
+
+## Database Structure
+
+### Databases
+
+```text
+prep_tracker_dev
+prep_tracker
+```
+
+- `prep_tracker_dev` → used for local development and testing
+- `prep_tracker` → used for production
+
+### Users
+
+```text
+prep_tracker_dev
+prep_tracker
+```
+
+- `prep_tracker_dev` user should connect only to `prep_tracker_dev`
+- `prep_tracker` user should connect only to `prep_tracker`
+
+### Notes
+
+- Both databases use the same PostgreSQL service
+- Both databases use the same host and port
+- Only database name, username, and password change between environments
+- Development must never connect to production database

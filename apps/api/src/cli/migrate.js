@@ -1,7 +1,14 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Umzug, SequelizeStorage } from 'umzug';
 
 import { DATABASE_URL } from '../utils/config.js';
 import { createSequelize } from '../utils/db.js';
+
+const migrationsPath = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../../migrations/*.js'
+);
 
 const sequelize = createSequelize(DATABASE_URL);
 
@@ -12,7 +19,7 @@ if (!sequelize) {
 
 const umzug = new Umzug({
   migrations: {
-    glob: 'migrations/*.js',
+    glob: migrationsPath,
   },
   context: sequelize.getQueryInterface(),
   storage: new SequelizeStorage({

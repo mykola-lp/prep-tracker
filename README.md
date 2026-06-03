@@ -14,10 +14,12 @@ Prep Tracker is a small monorepo with a React + Vite frontend, an Express + Grap
 npm install
 ```
 
-Create your local environment file from the example:
+Choose the environment file for the mode you want:
 
 ```bash
-cp .env.example .env
+cp .env.local.example .env.local
+# or
+cp .env.aiven-dev.example .env.aiven-dev
 ```
 
 Run database migrations after PostgreSQL is available:
@@ -72,10 +74,16 @@ npm run check:commit-message
 
 ## Docker
 
-Development stack:
+Development stack with local PostgreSQL:
 
 ```bash
-docker compose -f docker-compose.dev.yml up --build
+docker compose --env-file .env.local -f docker-compose.dev.yml --profile local-db up --build
+```
+
+Development stack with Aiven PostgreSQL:
+
+```bash
+docker compose --env-file .env.aiven-dev -f docker-compose.dev.yml up --build
 ```
 
 Production-like local stack:
@@ -93,7 +101,7 @@ docker compose -f docker-compose.yml up --build
 
 ## Environment
 
-Environment values live in `.env` and are documented in `.env.example`.
+Environment values live in root mode-specific files and are documented in the matching examples.
 
 Common variables include:
 
