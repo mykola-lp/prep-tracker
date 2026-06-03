@@ -770,3 +770,17 @@ Examples:
 - [`final`]: no further changes needed unless the process changes
 
 Remove temporary notes after the decision becomes [`final`].
+
+## Module System [`draft`] move to separate md file
+
+This project uses ECMAScript Modules (ESM).
+
+The `package.json` file contains:
+
+```json
+{
+  "type": "module"
+}
+```
+
+All JavaScript files use the ESM syntax with `import` and `export`. The project does not use CommonJS (`require` or `module.exports`). Standard `.js` file extensions are used instead of `.mjs`.
