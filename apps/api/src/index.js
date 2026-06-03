@@ -1,9 +1,12 @@
-import 'dotenv/config';
+import { DATABASE_URL, PORT } from './utils/config.js';
+import { connectToDatabase, createSequelize } from './utils/db.js';
 import { createApp } from './app.js';
 
-const port = Number(process.env.PORT) || 3001;
+const sequelize = createSequelize(DATABASE_URL);
+await connectToDatabase(sequelize);
+
 const app = createApp();
 
-app.listen(port, () => {
-  console.log(`API server is running on port ${port}.`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

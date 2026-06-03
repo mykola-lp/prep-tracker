@@ -1,13 +1,14 @@
-import http from 'node:http';
 import request from 'supertest';
 import { describe, expect, test } from 'vitest';
 import { createApp } from '../app.js';
 
 describe('health endpoints', () => {
-  const server = http.createServer(createApp());
+  const app = createApp({
+    databaseUrl: null,
+  });
 
   test('returns REST health status', async () => {
-    const response = await request(server).get('/api/health').expect(200);
+    const response = await request(app).get('/api/health').expect(200);
 
     expect(response.body).toEqual({
       status: 'ok',
@@ -17,7 +18,7 @@ describe('health endpoints', () => {
   });
 
   test('returns GraphQL health status', async () => {
-    const response = await request(server)
+    const response = await request(app)
       .post('/api/graphql')
       .send({
         query: '{ health { status service database } }',
