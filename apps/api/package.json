@@ -10,10 +10,11 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@apollo/server": "^5.5.1",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
-    "graphql": "^16.14.0",
+    "graphql": "^16.14.2",
     "pg": "^8.21.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.8",
