@@ -11,6 +11,7 @@ import { initModels } from './models/index.js';
 import { createContext } from './graphql/context.js';
 import { resolvers } from './graphql/resolvers.js';
 import { typeDefs } from './graphql/typeDefs.js';
+import { getDatabaseStatus } from './modules/health/service.js';
 
 const GRAPHQL_PATH = '/api/graphql';
 
@@ -26,21 +27,6 @@ export async function createApp({
 
   const models = providedModels ?? (sequelize ? initModels(sequelize) : null);
 
-  async function getDatabaseStatus() {
-    if (!sequelize) {
-      return 'not_configured';
-    }
-
-    try {
-      await sequelize.authenticate();
-      return 'ok';
-    } catch (error) {
-      console.error('Database health check failed:', error.message);
-
-      return 'error';
-    }
-  }
-
   app.use(
     cors({
       origin: clientOrigin,
@@ -53,7 +39,7 @@ export async function createApp({
     response.json({
       status: 'ok',
       service: 'prep-tracker-api',
-      database: await getDatabaseStatus(),
+      database: await getDatabaseStatus(sequelize),
     });
   });
 
@@ -74,6 +60,7 @@ export async function createApp({
         createContext({
           req,
           models,
+          sequelize,
         }),
     })
   );
