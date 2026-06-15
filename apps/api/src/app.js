@@ -1,30 +1,30 @@
 import cors from 'cors';
 import express from 'express';
-import { buildSchema, graphql } from 'graphql';
+
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@as-integrations/express5';
 
 import { CLIENT_ORIGIN, DATABASE_URL } from './utils/config.js';
 import { createSequelize } from './utils/db.js';
 import { initModels } from './models/index.js';
 
-const schema = buildSchema(`
-  type Health {
-    status: String!
-    service: String!
-    database: String!
-  }
+import { createContext } from './graphql/context.js';
+import { resolvers } from './graphql/resolvers.js';
+import { typeDefs } from './graphql/typeDefs.js';
 
-  type Query {
-    health: Health!
-  }
-`);
+const GRAPHQL_PATH = '/api/graphql';
 
-export function createApp({ clientOrigin = CLIENT_ORIGIN, databaseUrl = DATABASE_URL } = {}) {
+export async function createApp({
+  clientOrigin = CLIENT_ORIGIN,
+  databaseUrl = DATABASE_URL,
+  sequelize: providedSequelize = null,
+  models: providedModels = null,
+} = {}) {
   const app = express();
-  const sequelize = createSequelize(databaseUrl);
 
-  if (sequelize) {
-    initModels(sequelize);
-  }
+  const sequelize = providedSequelize ?? createSequelize(databaseUrl);
+
+  const models = providedModels ?? (sequelize ? initModels(sequelize) : null);
 
   async function getDatabaseStatus() {
     if (!sequelize) {
@@ -36,6 +36,7 @@ export function createApp({ clientOrigin = CLIENT_ORIGIN, databaseUrl = DATABASE
       return 'ok';
     } catch (error) {
       console.error('Database health check failed:', error.message);
+
       return 'error';
     }
   }
@@ -45,6 +46,7 @@ export function createApp({ clientOrigin = CLIENT_ORIGIN, databaseUrl = DATABASE
       origin: clientOrigin,
     })
   );
+
   app.use(express.json());
 
   app.get('/api/health', async (_request, response) => {
@@ -55,21 +57,26 @@ export function createApp({ clientOrigin = CLIENT_ORIGIN, databaseUrl = DATABASE
     });
   });
 
-  app.post('/api/graphql', async (request, response) => {
-    const result = await graphql({
-      schema,
-      source: request.body?.query || '',
-      rootValue: {
-        health: async () => ({
-          status: 'ok',
-          service: 'prep-tracker-api',
-          database: await getDatabaseStatus(),
-        }),
-      },
-    });
-
-    response.json(result);
+  const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
   });
+
+  await apolloServer.start();
+
+  app.use(
+    GRAPHQL_PATH,
+    cors({
+      origin: clientOrigin,
+    }),
+    expressMiddleware(apolloServer, {
+      context: async ({ req }) =>
+        createContext({
+          req,
+          models,
+        }),
+    })
+  );
 
   return app;
 }

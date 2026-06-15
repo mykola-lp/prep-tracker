@@ -3,11 +3,12 @@ import { describe, expect, test } from 'vitest';
 import { createApp } from '../app.js';
 
 describe('health endpoints', () => {
-  const app = createApp({
+  const appPromise = createApp({
     databaseUrl: null,
   });
 
   test('returns REST health status', async () => {
+    const app = await appPromise;
     const response = await request(app).get('/api/health').expect(200);
 
     expect(response.body).toEqual({
@@ -18,6 +19,7 @@ describe('health endpoints', () => {
   });
 
   test('returns GraphQL health status', async () => {
+    const app = await appPromise;
     const response = await request(app)
       .post('/api/graphql')
       .send({

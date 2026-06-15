@@ -1,3 +1,3 @@
-export async function getTopics(models) {
-  return models.Topic.findAll();
+export async function getTopics(Topic) {
+  return Topic.findAll();
 }
