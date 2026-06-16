@@ -7,7 +7,16 @@ if (!JWT_SECRET) {
 }
 
 export function signToken(user) {
-  return jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(
+    {
+      sub: user.id,
+      email: user.email,
+    },
+    JWT_SECRET,
+    {
+      expiresIn: '7d',
+    }
+  );
 }
 
 export function verifyToken(token) {

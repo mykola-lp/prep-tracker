@@ -5,6 +5,7 @@ import { notesResolvers } from '../modules/notes/resolvers.js';
 import { questionsResolvers } from '../modules/questions/resolvers.js';
 import { topicResolvers } from '../modules/topics/resolvers.js';
 
+// @todo: replace custom merge - npm install @graphql-tools/merge
 export function mergeResolvers(definitions) {
   const merged = {};
 
