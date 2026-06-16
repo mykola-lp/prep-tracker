@@ -2,8 +2,11 @@ import { getTopics } from './service.js';
 
 export const topicResolvers = {
   Query: {
-    topics: (_, __, context) => {
-      return getTopics(context.models.Topic);
+    topics: async (_, __, context) => {
+      return getTopics({
+        models: context.models,
+        user: context.user,
+      });
     },
     topic: () => null,
   },
