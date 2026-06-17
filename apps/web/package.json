@@ -11,9 +11,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^4.2.3",
+    "@hookform/resolvers": "^5.4.0",
+    "clsx": "^2.1.1",
+    "graphql": "^16.14.2",
     "path": "^0.12.7",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.79.0",
+    "react-router": "^7.18.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -21,7 +30,7 @@
     "@types/node": "^25.9.0",
     "@vitejs/plugin-react": "^5.1.0",
     "jsdom": "^27.2.0",
-    "vitest": "^4.0.14",
-    "vite": "^7.1.11"
+    "vite": "^7.1.11",
+    "vitest": "^4.0.14"
   }
 }
