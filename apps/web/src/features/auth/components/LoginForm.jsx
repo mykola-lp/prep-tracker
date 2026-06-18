@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { useNavigate } from 'react-router';
 
 import { storage } from '@/lib/storage';

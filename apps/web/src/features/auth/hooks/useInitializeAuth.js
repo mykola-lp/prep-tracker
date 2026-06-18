@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client/react';
 
 import { storage } from '@/lib/storage';
 import { ME_QUERY } from '@/features/auth/graphql/meQuery';

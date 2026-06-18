@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router';
+import { RouterProvider } from 'react-router-dom';
 
 import { AppProvider } from '@/app/providers/AppProvider';
 import { router } from '@/app/router/router';
