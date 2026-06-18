@@ -5,3 +5,23 @@ body,
 #root {
   min-height: 100%;
 }
+
+:root {
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  color: #f4f7fb;
+  background:
+    radial-gradient(circle at top, rgba(88, 166, 255, 0.35), transparent 40%),
+    linear-gradient(135deg, #09111f 0%, #14233a 55%, #1f3250 100%);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}

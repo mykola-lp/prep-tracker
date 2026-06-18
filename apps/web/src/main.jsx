@@ -4,9 +4,7 @@ import { RouterProvider } from 'react-router';
 import { AppProvider } from '@/app/providers/AppProvider';
 import { router } from '@/app/router/router';
 
-import App from './App.jsx';
-
-import './styles.css';
+import './styles/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <AppProvider>
