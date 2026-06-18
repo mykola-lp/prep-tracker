@@ -8,7 +8,7 @@ const rootLocalEnvPath = path.join(projectRoot, '.env.local');
 const rootAivenDevEnvPath = path.join(projectRoot, '.env.aiven-dev');
 const envFile = process.env.ENV_FILE;
 
-if (!process.env.DATABASE_URL) {
+if (!process.env.DATABASE_URL && !process.env.TEST_DATABASE_URL) {
   if (envFile) {
     const resolvedEnvFile = path.isAbsolute(envFile) ? envFile : path.join(projectRoot, envFile);
 

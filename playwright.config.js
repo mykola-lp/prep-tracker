@@ -17,7 +17,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: 'ENV_FILE=.env.test npm run dev --workspace @prep-tracker/api',
+      command: 'npm run dev --workspace @prep-tracker/api',
       url: 'http://127.0.0.1:3001/api/health',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
