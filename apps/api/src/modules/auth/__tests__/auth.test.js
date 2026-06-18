@@ -4,7 +4,7 @@ import { beforeAll, afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../app.js';
 import { createSequelize } from '../../../utils/db.js';
 import { initModels } from '../../../models/index.js';
-import { DATABASE_URL } from '../../../utils/config.js';
+import { DATABASE_URL, TEST_DATABASE_URL } from '../../../utils/config.js';
 
 const REGISTER_MUTATION = `#graphql
   mutation Register($input: RegisterInput!) {
@@ -47,12 +47,12 @@ let sequelize;
 let models;
 
 beforeAll(async () => {
-  sequelize = createSequelize(DATABASE_URL);
+  sequelize = createSequelize(TEST_DATABASE_URL || DATABASE_URL);
 
   // Ensure sequelize was created successfully
   if (!sequelize) {
     throw new Error(
-      'Failed to initialize database connection. DATABASE_URL may be missing or invalid.'
+      'Failed to initialize database connection. TEST_DATABASE_URL or DATABASE_URL may be missing or invalid.'
     );
   }
 
