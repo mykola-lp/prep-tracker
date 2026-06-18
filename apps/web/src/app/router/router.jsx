@@ -6,10 +6,6 @@ import { HealthPage } from '@/features/health/pages/HealthPage';
 
 export const router = createBrowserRouter([
   {
-    path: '*',
-    element: <div>ROUTER WORKS</div>,
-  },
-  {
     path: '/login',
     element: <LoginPage />,
   },
