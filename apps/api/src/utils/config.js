@@ -8,7 +8,7 @@ const rootLocalEnvPath = path.join(projectRoot, '.env.local');
 const rootAivenDevEnvPath = path.join(projectRoot, '.env.aiven-dev');
 const envFile = process.env.ENV_FILE;
 
-if (!process.env.DATABASE_URL) {
+if (!process.env.DATABASE_URL && !process.env.TEST_DATABASE_URL) {
   if (envFile) {
     const resolvedEnvFile = path.isAbsolute(envFile) ? envFile : path.join(projectRoot, envFile);
 
@@ -25,6 +25,7 @@ if (!process.env.DATABASE_URL) {
 }
 
 export const DATABASE_URL = process.env.DATABASE_URL;
+export const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL;
 export const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 export const PORT = Number(process.env.PORT) || 3001;
-export const SECRET = process.env.SECRET;
+export const JWT_SECRET = process.env.JWT_SECRET;

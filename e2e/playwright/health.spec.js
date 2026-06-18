@@ -15,7 +15,7 @@ test('shows the application shell', async ({ page }) => {
     });
   });
 
-  await page.goto('/');
+  await page.goto('/health');
 
   await expect(page.getByRole('heading', { name: 'Infrastructure is wired.' })).toBeVisible();
   await expect(page.getByText('Prep Tracker')).toBeVisible();

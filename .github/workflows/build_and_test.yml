@@ -20,6 +20,25 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
 
+    env:
+      TEST_DATABASE_URL: postgres://prep_tracker_test:prep_tracker_test@localhost:5432/prep_tracker_test
+      JWT_SECRET: super_secret_key_123
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: prep_tracker_test
+          POSTGRES_PASSWORD: prep_tracker_test
+          POSTGRES_DB: prep_tracker_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U prep_tracker_test -d prep_tracker_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +60,7 @@ jobs:
 
       - name: Test unit
         run: |
+          npm run db:migrate
           npm run test:web
           npm run test:api
 

@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import App from '../App.jsx';
+import { HealthPage } from '../pages/HealthPage';
 
-describe('App', () => {
+describe('HealthPage', () => {
   beforeEach(() => {
     globalThis.fetch = vi.fn(() =>
       Promise.resolve({
@@ -26,14 +26,14 @@ describe('App', () => {
   });
 
   test('shows the initial loading state', () => {
-    render(<App />);
+    render(<HealthPage />);
 
     expect(screen.getByText('Infrastructure is wired.')).toBeInTheDocument();
     expect(screen.getAllByText('loading')).toHaveLength(2);
   });
 
   test('renders API health status from GraphQL response', async () => {
-    render(<App />);
+    render(<HealthPage />);
 
     expect(await screen.findByText('ok')).toBeInTheDocument();
     expect(screen.getByText('api')).toBeInTheDocument();

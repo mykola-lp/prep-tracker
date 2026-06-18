@@ -20,6 +20,8 @@ Choose the environment file for the mode you want:
 cp .env.local.example .env.local
 # or
 cp .env.aiven-dev.example .env.aiven-dev
+# for tests
+cp .env.test.example .env.test
 ```
 
 Run database migrations after PostgreSQL is available:
@@ -107,6 +109,7 @@ Common variables include:
 
 - `VITE_API_BASE_URL`
 - `DATABASE_URL`
+- `TEST_DATABASE_URL`
 - `CLIENT_ORIGIN`
 - `PORT`
 

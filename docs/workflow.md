@@ -813,3 +813,54 @@ prep_tracker
 - Both databases use the same host and port
 - Only database name, username, and password change between environments
 - Development must never connect to production database
+
+## Import Guidelines
+
+### Alias Usage (`@`)
+
+The `@` alias points to the `src` directory and should be used for shared or cross-feature imports.
+
+Examples:
+
+```js
+import { storage } from '@/lib/storage';
+import { cn } from '@/lib/cn';
+import { useInitializeAuth } from '@/hooks/useInitializeAuth';
+import { AppLayout } from '@/components/AppLayout';
+```
+
+### Relative Imports
+
+Use relative imports (`./` and `../`) for files that belong to the same feature or module.
+
+Examples:
+
+```js
+import { LOGIN_MUTATION } from '../graphql/loginMutation';
+import { useAuthStore } from '../store/authStore';
+```
+
+### Recommended Rule
+
+- Use `@/...` for shared application code and cross-feature dependencies.
+- Use `./` and `../` for files within the same feature.
+- Avoid deep relative paths such as `../../../...` whenever possible.
+
+**Good**
+
+```js
+import { storage } from '@/lib/storage';
+import { LOGIN_MUTATION } from '../graphql/loginMutation';
+```
+
+**Avoid**
+
+```js
+import { useInitializeAuth } from '../../../hooks/useInitializeAuth';
+```
+
+**Prefer**
+
+```js
+import { useInitializeAuth } from '@/hooks/useInitializeAuth';
+```

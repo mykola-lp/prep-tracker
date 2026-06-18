@@ -1,0 +1,26 @@
+Via UI:
+
+1. Start the development stack.
+2. Open `/login`.
+3. Register a user via GraphQL or through the UI if you add a registration page.
+4. Sign in and verify that `/dashboard` is displayed successfully.
+
+
+// register
+curl http://localhost:3001/api/graphql \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"mutation { register(input:{email:\"test@example.com\", password:\"password123\"}) { token user { id email displayName } } }"}'
+
+// check
+curl http://localhost:3001/api/graphql \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"mutation { login(input:{email:\"test@example.com\", password:\"password123\"}) { token user { id email displayName } } }"}'
+
+// me with token
+curl http://localhost:3001/api/graphql \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <TOKEN>' \
+  -d '{"query":"query { me { id email displayName } }"}'
+
+// the last one
+npm run test:e2e

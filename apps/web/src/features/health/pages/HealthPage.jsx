@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 
+import { HealthStatus } from '../components/HealthStatus';
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
-export default function App() {
+export function HealthPage() {
   const [health, setHealth] = useState({
     status: 'loading',
     service: 'api',
@@ -36,34 +38,5 @@ export default function App() {
     loadHealth();
   }, []);
 
-  return (
-    <main className="app-shell">
-      <section className="hero-card">
-        <p className="eyebrow">Prep Tracker</p>
-
-        <h1>Infrastructure is wired.</h1>
-
-        <p className="lead">
-          React talks to Express through GraphQL, with PostgreSQL ready for the first real feature.
-        </p>
-
-        <dl className="status-grid">
-          <div>
-            <dt>API</dt>
-            <dd>{health.status}</dd>
-          </div>
-
-          <div>
-            <dt>Service</dt>
-            <dd>{health.service}</dd>
-          </div>
-
-          <div>
-            <dt>PostgreSQL</dt>
-            <dd>{health.database}</dd>
-          </div>
-        </dl>
-      </section>
-    </main>
-  );
+  return <HealthStatus health={health} />;
 }

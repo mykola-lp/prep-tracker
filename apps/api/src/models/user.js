@@ -9,6 +9,10 @@ export function initUser(sequelize) {
         type: DataTypes.STRING(320),
         allowNull: false,
         unique: true,
+        validate: {
+          isEmail: true,
+          notEmpty: true,
+        },
       },
       passwordHash: {
         type: DataTypes.STRING(255),
@@ -23,6 +27,7 @@ export function initUser(sequelize) {
       sequelize,
       tableName: 'users',
       underscored: true,
+      timestamps: true,
     }
   );
 
