@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 
 import { storage } from '@/lib/storage';
-import { ME_QUERY } from '../graphql/meQuery';
-import { useAuthStore } from '../store/authStore';
+import { ME_QUERY } from '@/features/auth/graphql/meQuery';
+import { useAuthStore } from '@/features/auth/store/authStore';
 
 export function useInitializeAuth() {
   const client = useApolloClient();
