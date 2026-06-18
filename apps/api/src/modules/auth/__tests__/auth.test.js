@@ -49,6 +49,13 @@ let models;
 beforeAll(async () => {
   sequelize = createSequelize(DATABASE_URL);
 
+  // Ensure sequelize was created successfully
+  if (!sequelize) {
+    throw new Error(
+      'Failed to initialize database connection. DATABASE_URL may be missing or invalid.'
+    );
+  }
+
   models = initModels(sequelize);
 
   app = await createApp({
@@ -58,7 +65,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await sequelize.close();
+  if (sequelize) {
+    await sequelize.close();
+  }
 });
 
 describe('Auth GraphQL', () => {
