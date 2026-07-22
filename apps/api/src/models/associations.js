@@ -30,6 +30,17 @@ export function defineAssociations({
     foreignKey: 'topicId',
   });
 
+  User.hasMany(Question, {
+    as: 'questions',
+    foreignKey: 'userId',
+    onDelete: 'CASCADE',
+  });
+
+  Question.belongsTo(User, {
+    as: 'owner',
+    foreignKey: 'userId',
+  });
+
   User.hasMany(Note, {
     as: 'notes',
     foreignKey: 'userId',
