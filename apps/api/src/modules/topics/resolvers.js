@@ -1,27 +1,47 @@
-import { getTopics } from './service.js';
+import * as topicService from './service.js';
 
 export const topicResolvers = {
   Query: {
+    topic: async (_, { id }, context) => {
+      return topicService.getTopic({
+        models: context.models,
+        user: context.user,
+        id,
+      });
+    },
+
     topics: async (_, __, context) => {
-      return getTopics({
+      return topicService.getTopics({
         models: context.models,
         user: context.user,
       });
     },
-    topic: () => null,
   },
 
   Mutation: {
-    createTopic: () => {
-      throw new Error('Not implemented');
+    createTopic: (_, { input }, context) => {
+      return topicService.createTopic({
+        models: context.models,
+        user: context.user,
+        input,
+      });
     },
 
-    updateTopic: () => {
-      throw new Error('Not implemented');
+    updateTopic: (_, { id, input }, context) => {
+      return topicService.updateTopic({
+        models: context.models,
+        user: context.user,
+        id,
+        input,
+      });
     },
 
-    deleteTopic: () => {
-      throw new Error('Not implemented');
+    deleteTopic: (_, { id }, context) => {
+      return topicService.deleteTopic({
+        models: context.models,
+        user: context.user,
+        id,
+      });
     },
   },
 };
