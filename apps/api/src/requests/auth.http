@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:3001/api/graphql
+@token = YOUR_TOKEN_FROM_CREATE_USER
+
+### Health check
+GET http://localhost:3001/api/health
+
+### 1. Register a new user
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"aaa@test.com\", password: \"password123\", displayName: \"User B\" }) { token user { id email } } }"
+}
+
+### 2. Login (verify an already registered user can log in)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { login(input: { email: \"a@test.com\", password: \"password123\" }) { token user { id email } } }"
+}
+
+### 3. Duplicate email on registration (should fail)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"a@test.com\", password: \"password123\" }) { token user { id email } } }"
+}
+
+### 4. Validation — registration with a short password (should fail)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"short@test.com\", password: \"123\" }) { token } }"
+}
+
+### 5. Validation — registration with an invalid email (should fail)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"not-an-email\", password: \"password123\" }) { token } }"
+}
