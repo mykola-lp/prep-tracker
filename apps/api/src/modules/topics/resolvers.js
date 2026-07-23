@@ -44,4 +44,15 @@ export const topicResolvers = {
       });
     },
   },
+
+  Topic: {
+    questions: async (topic, _, context) => {
+      return context.models.Question.findAll({
+        where: {
+          topicId: topic.id,
+          userId: context.user.id,
+        },
+      });
+    },
+  },
 };
