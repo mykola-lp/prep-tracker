@@ -10,10 +10,12 @@ export const topicResolvers = {
       });
     },
 
-    topics: async (_, __, context) => {
+    topics: async (_, { tagId, status }, context) => {
       return getTopics({
         models: context.models,
         user: context.user,
+        tagId,
+        status,
       });
     },
   },
@@ -62,6 +64,10 @@ export const topicResolvers = {
           userId: context.user.id,
         },
       });
+    },
+
+    tags: async (topic, _, context) => {
+      return topic.getTags();
     },
   },
 };

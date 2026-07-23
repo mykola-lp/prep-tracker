@@ -1,17 +1,24 @@
 import { requireAuth, findOwnedRecord } from '../auth/authorization.js';
 
+import { buildTagFilterInclude } from '../tags/filters.js';
+
 export async function getTopic({ models, user, id }) {
   requireAuth(user);
   return findOwnedRecord(models.Topic, id, user.id);
 }
 
-export async function getTopics({ models, user }) {
+export async function getTopics({ models, user, tagId, status }) {
   requireAuth(user);
 
+  const where = {
+    userId: user.id,
+  };
+
+  if (status) where.status = status;
+
   return models.Topic.findAll({
-    where: {
-      userId: user.id,
-    },
+    where,
+    include: buildTagFilterInclude(models, tagId),
   });
 }
 

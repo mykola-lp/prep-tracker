@@ -8,6 +8,7 @@ export const topicTypeDefs = [
     deadline: String
     questions: [Question!]!
     notes: [Note!]!
+    tags: [Tag!]!
   }
 
   input CreateTopicInput {
@@ -24,8 +25,8 @@ export const topicTypeDefs = [
   }
 
   extend type Query {
-    topics: [Topic!]!
     topic(id: ID!): Topic
+    topics(tagId: ID, status: String): [Topic!]!
   }
 
   extend type Mutation {

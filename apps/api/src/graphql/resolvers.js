@@ -4,6 +4,7 @@ import { healthResolvers } from '../modules/health/resolvers.js';
 import { notesResolvers } from '../modules/notes/resolvers.js';
 import { questionsResolvers } from '../modules/questions/resolvers.js';
 import { topicResolvers } from '../modules/topics/resolvers.js';
+import { tagsResolvers } from '../modules/tags/resolvers.js';
 
 // @todo: replace custom merge - npm install @graphql-tools/merge
 export function mergeResolvers(definitions) {
@@ -30,4 +31,5 @@ export const resolvers = mergeResolvers([
   notesResolvers,
   questionsResolvers,
   topicResolvers,
+  tagsResolvers,
 ]);
