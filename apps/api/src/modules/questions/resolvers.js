@@ -23,6 +23,7 @@ export const questionsResolvers = {
       });
     },
   },
+
   Mutation: {
     createQuestion: async (_, { input }, context) => {
       return createQuestion({
