@@ -326,21 +326,21 @@ describe('Topics GraphQL ownership', () => {
 
     expect(storedTopic).toBeNull();
   });
-});
 
-it('returns questions nested under their topic', async () => {
-  const user = await registerUser('nested@test.com');
-  const topic = await createTopic(user.token);
+  it('returns questions nested under their topic', async () => {
+    const user = await registerUser('nested@test.com');
+    const topic = await createTopic(user.token);
 
-  await createQuestion(user.token, topic.id, { prompt: 'First question' });
-  await createQuestion(user.token, topic.id, { prompt: 'Second question' });
+    await createQuestion(user.token, topic.id, { prompt: 'First question' });
+    await createQuestion(user.token, topic.id, { prompt: 'Second question' });
 
-  const response = await graphql({
-    query: TOPIC_WITH_QUESTIONS_QUERY,
-    token: user.token,
-    variables: { id: topic.id },
+    const response = await graphql({
+      query: TOPIC_WITH_QUESTIONS_QUERY,
+      token: user.token,
+      variables: { id: topic.id },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.topic.questions).toHaveLength(2);
   });
-
-  expect(response.body.errors).toBeUndefined();
-  expect(response.body.data.topic.questions).toHaveLength(2);
 });

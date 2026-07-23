@@ -7,6 +7,7 @@ export const questionsTypeDefs = [
     answer: String
     status: String!
     deadline: String
+    notes: [Note!]!
   }
 
   input CreateQuestionInput {

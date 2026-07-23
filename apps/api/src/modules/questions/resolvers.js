@@ -50,4 +50,15 @@ export const questionsResolvers = {
       });
     },
   },
+
+  Question: {
+    notes: async (question, _, context) => {
+      return context.models.Note.findAll({
+        where: {
+          questionId: question.id,
+          userId: context.user.id,
+        },
+      });
+    },
+  },
 };
