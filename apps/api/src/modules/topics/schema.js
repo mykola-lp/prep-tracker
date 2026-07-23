@@ -6,6 +6,7 @@ export const topicTypeDefs = [
     description: String
     status: String!
     deadline: String
+    questions: [Question!]!
   }
 
   input CreateTopicInput {
