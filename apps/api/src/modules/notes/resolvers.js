@@ -10,10 +10,11 @@ export const notesResolvers = {
       });
     },
 
-    notes: async (_, __, context) => {
+    notes: async (_, { tagId }, context) => {
       return getNotes({
         models: context.models,
         user: context.user,
+        tagId,
       });
     },
   },
@@ -42,6 +43,12 @@ export const notesResolvers = {
         user: context.user,
         id,
       });
+    },
+  },
+
+  Note: {
+    tags: async (note) => {
+      return note.getTags();
     },
   },
 };

@@ -5,6 +5,7 @@ export const notesTypeDefs = [
     topicId: ID
     questionId: ID
     body: String!
+    tags: [Tag!]!
   }
 
   input CreateNoteInput {
@@ -18,8 +19,8 @@ export const notesTypeDefs = [
   }
 
   extend type Query {
-    notes: [Note!]!
     note(id: ID!): Note
+    notes(tagId: ID): [Note!]!
   }
 
   extend type Mutation {

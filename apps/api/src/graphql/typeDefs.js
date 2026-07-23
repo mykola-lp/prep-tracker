@@ -4,6 +4,7 @@ import { healthTypeDefs } from '../modules/health/schema.js';
 import { notesTypeDefs } from '../modules/notes/schema.js';
 import { questionsTypeDefs } from '../modules/questions/schema.js';
 import { topicTypeDefs } from '../modules/topics/schema.js';
+import { tagsTypeDefs } from '../modules/tags/schema.js';
 
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
@@ -27,4 +28,5 @@ export const typeDefs = [
   ...notesTypeDefs,
   ...questionsTypeDefs,
   ...topicTypeDefs,
+  ...tagsTypeDefs,
 ];

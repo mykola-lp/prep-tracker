@@ -16,10 +16,12 @@ export const questionsResolvers = {
       });
     },
 
-    questions: async (_, __, context) => {
+    questions: async (_, { tagId, status }, context) => {
       return getQuestions({
         models: context.models,
         user: context.user,
+        tagId,
+        status,
       });
     },
   },
@@ -59,6 +61,10 @@ export const questionsResolvers = {
           userId: context.user.id,
         },
       });
+    },
+
+    tags: async (question) => {
+      return question.getTags();
     },
   },
 };
