@@ -84,6 +84,30 @@ const NOTE_QUERY = `#graphql
   }
 `;
 
+const TOPIC_WITH_NOTES_QUERY = `#graphql
+  query TopicWithNotes($id: ID!) {
+    topic(id: $id) {
+      id
+      notes {
+        id
+        body
+      }
+    }
+  }
+`;
+
+const QUESTION_WITH_NOTES_QUERY = `#graphql
+  query QuestionWithNotes($id: ID!) {
+    question(id: $id) {
+      id
+      notes {
+        id
+        body
+      }
+    }
+  }
+`;
+
 let app;
 let sequelize;
 let models;
@@ -396,5 +420,38 @@ describe('Notes GraphQL ownership', () => {
 
     const stored = await models.Note.findByPk(created.data.createNote.id);
     expect(stored).toBeNull();
+  });
+
+  it('returns notes nested under their topic', async () => {
+    const user = await registerUser('nested-topic-notes@test.com');
+    const topic = await createTopic(user.token);
+    await createNote(user.token, { topicId: topic.id, body: 'Note on topic' });
+
+    const response = await graphql({
+      query: TOPIC_WITH_NOTES_QUERY,
+      token: user.token,
+      variables: { id: topic.id },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.topic.notes).toHaveLength(1);
+    expect(response.body.data.topic.notes[0].body).toBe('Note on topic');
+  });
+
+  it('returns notes nested under their question', async () => {
+    const user = await registerUser('nested-question-notes@test.com');
+    const topic = await createTopic(user.token);
+    const question = await createQuestion(user.token, topic.id);
+    await createNote(user.token, { questionId: question.id, body: 'Note on question' });
+
+    const response = await graphql({
+      query: QUESTION_WITH_NOTES_QUERY,
+      token: user.token,
+      variables: { id: question.id },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.question.notes).toHaveLength(1);
+    expect(response.body.data.question.notes[0].body).toBe('Note on question');
   });
 });
