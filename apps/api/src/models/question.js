@@ -9,6 +9,10 @@ export function initQuestion(sequelize) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       prompt: {
         type: DataTypes.TEXT,
         allowNull: false,

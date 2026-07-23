@@ -1,0 +1,90 @@
+@baseUrl = http://localhost:3001/api/graphql
+@token = YOUR_TOKEN_FROM_CREATE_USER (user1 & user2)
+@topicId = 1
+
+### Register a new user1
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"a@test.com\", password: \"password123\", displayName: \"User A\" }) { token user { id email } } }"
+}
+
+### Create a topic
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { createTopic(input: { title: \"JS\", description: \"JavaScript basics\" }) { id title description status } }"
+}
+
+### List topics
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { topics { id title description status } }"
+}
+
+### Get a single topic by id
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { topic(id: {{topicId}}) { id title description status } }"
+}
+
+### Update a topic
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { updateTopic(id: {{topicId}}, input: { status: \"learning\" }) { id title status } }"
+}
+
+### Delete a topic
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { deleteTopic(id: {{topicId}}) }"
+}
+
+### Request without a token (should fail — UNAUTHENTICATED)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "query { topics { id title } }"
+}
+
+### Request with an invalid token
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer invalid.token.here
+
+{
+  "query": "query { topics { id title } }"
+}
+
+### Register a new user2
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"b@test.com\", password: \"password123\", displayName: \"User B\" }) { token user { id email } } }"
+}
+
+### Access another user's topic (create a second user, try topic(id) with the first user's topic)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { topic(id: 999) { id title } }"
+}

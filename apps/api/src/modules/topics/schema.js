@@ -8,17 +8,6 @@ export const topicTypeDefs = [
     deadline: String
   }
 
-  extend type Query {
-    topics: [Topic!]!
-    topic(id: ID!): Topic
-  }
-
-  extend type Mutation {
-    createTopic(input: CreateTopicInput!): Topic!
-    updateTopic(id: ID!, input: UpdateTopicInput!): Topic!
-    deleteTopic(id: ID!): Boolean!
-  }
-
   input CreateTopicInput {
     title: String!
     description: String
@@ -30,6 +19,17 @@ export const topicTypeDefs = [
     description: String
     status: String
     deadline: String
+  }
+
+  extend type Query {
+    topics: [Topic!]!
+    topic(id: ID!): Topic
+  }
+
+  extend type Mutation {
+    createTopic(input: CreateTopicInput!): Topic!
+    updateTopic(id: ID!, input: UpdateTopicInput!): Topic!
+    deleteTopic(id: ID!): Boolean!
   }
 `,
 ];

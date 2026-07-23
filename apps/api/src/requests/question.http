@@ -1,0 +1,127 @@
+@baseUrl = http://localhost:3001/api/graphql
+@token = YOUR_TOKEN_FROM_CREATE_USER (user1 & user2)
+@topicId = 1
+@questionId = 1
+
+### Register a new user1
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"a@test.com\", password: \"password123\", displayName: \"User A\" }) { token user { id email } } }"
+}
+
+### Create a topic (needed before creating a question)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { createTopic(input: { title: \"JS\", description: \"JavaScript basics\" }) { id title description status } }"
+}
+
+### Create a question for the topic
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { createQuestion(input: { topicId: {{topicId}}, prompt: \"What is a closure?\" }) { id prompt answer status } }"
+}
+
+### List questions
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { questions { id prompt answer status } }"
+}
+
+### Get a single question by id
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { question(id: {{questionId}}) { id prompt answer status } }"
+}
+
+### Update a question
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { updateQuestion(id: {{questionId}}, input: { status: \"answered\", answer: \"A closure captures the enclosing scope\" }) { id prompt status answer } }"
+}
+
+### Delete a question
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { deleteQuestion(id: {{questionId}}) }"
+}
+
+### Request without a token (should fail — UNAUTHENTICATED)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "query { questions { id prompt } }"
+}
+
+### Request with an invalid token
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer invalid.token.here
+
+{
+  "query": "query { questions { id prompt } }"
+}
+
+### Register a new user2
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"b@test.com\", password: \"password123\", displayName: \"User B\" }) { token user { id email } } }"
+}
+
+### Create a question under another user's topic (should fail — NOT_FOUND)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { createQuestion(input: { topicId: {{topicId}}, prompt: \"Trying to attach to a foreign topic\" }) { id prompt } }"
+}
+
+### Access another user's question (should fail — NOT_FOUND)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { question(id: 999) { id prompt } }"
+}
+
+### Update another user's question (should fail — NOT_FOUND)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { updateQuestion(id: 999, input: { status: \"answered\" }) { id status } }"
+}
+
+### Delete another user's question (should fail — NOT_FOUND)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { deleteQuestion(id: 999) }"
+}
