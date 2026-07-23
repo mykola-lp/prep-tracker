@@ -1,0 +1,75 @@
+@baseUrl = http://localhost:3001/api/graphql
+@token = YOUR_TOKEN_FROM_CREATE_USER
+@topicId = 1
+@tagId = 1
+
+### Register a user
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "query": "mutation { register(input: { email: \"tags@test.com\", password: \"password123\" }) { token user { id } } }"
+}
+
+### Create a tag
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { createTag(input: { name: \"frontend\" }) { id name } }"
+}
+
+### List tags
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { tags { id name } }"
+}
+
+### Assign tag to topic
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { addTagToTopic(topicId: {{topicId}}, tagId: {{tagId}}) { id tags { id name } } }"
+}
+
+### Filter topics by tag
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { topics(tagId: {{tagId}}) { id title } }"
+}
+
+### Filter topics by status
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "query { topics(status: \"new\") { id title status } }"
+}
+
+### Remove tag from topic
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { removeTagFromTopic(topicId: {{topicId}}, tagId: {{tagId}}) { id tags { id } } }"
+}
+
+### Delete tag
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "mutation { deleteTag(id: {{tagId}}) }"
+}
