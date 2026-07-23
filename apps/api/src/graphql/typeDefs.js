@@ -24,7 +24,7 @@ export const typeDefs = [
   ...authTypeDefs,
   ...dashboardTypeDefs,
   ...healthTypeDefs,
-  notesTypeDefs,
-  questionsTypeDefs,
-  topicTypeDefs,
+  ...notesTypeDefs,
+  ...questionsTypeDefs,
+  ...topicTypeDefs,
 ];

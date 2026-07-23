@@ -11,20 +11,20 @@ export async function getCurrentUser({ models, userId }) {
 }
 
 export async function registerUser({ models, email, password, displayName }) {
-  const existing = await models.User.findOne({
-    where: { email },
-  });
-
-  if (existing) {
-    throw new Error('User already exists');
+  if (!email?.trim()) {
+    throw new Error('Email is required');
   }
 
   if (password.length < 8) {
     throw new Error('Password must be at least 8 characters');
   }
 
-  if (!email.trim()) {
-    throw new Error('Email is required');
+  const existing = await models.User.findOne({
+    where: { email },
+  });
+
+  if (existing) {
+    throw new Error('User already exists');
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
