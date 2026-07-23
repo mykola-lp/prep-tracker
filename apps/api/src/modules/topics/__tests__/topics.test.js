@@ -8,6 +8,8 @@ import { initModels } from '../../../models/index.js';
 import { DATABASE_URL, TEST_DATABASE_URL } from '../../../utils/config.js';
 import { createSequelize } from '../../../utils/db.js';
 
+// @todo: src/__tests__/helpers/graphqlHelpers.js
+
 const REGISTER_MUTATION = `#graphql
   mutation Register($input: RegisterInput!) {
     register(input: $input) {
@@ -70,6 +72,28 @@ const TOPIC_QUERY = `#graphql
   }
 `;
 
+const TOPIC_WITH_QUESTIONS_QUERY = `#graphql
+  query TopicWithQuestions($id: ID!) {
+    topic(id: $id) {
+      id
+      title
+      questions {
+        id
+        prompt
+      }
+    }
+  }
+`;
+
+const CREATE_QUESTION_MUTATION = `#graphql
+  mutation CreateQuestion($input: CreateQuestionInput!) {
+    createQuestion(input: $input) {
+      id
+      prompt
+    }
+  }
+`;
+
 let app;
 let sequelize;
 let models;
@@ -115,6 +139,22 @@ async function createTopic(token, input = {}) {
   });
 
   return response.body.data.createTopic;
+}
+
+async function createQuestion(token, topicId, input = {}) {
+  const response = await graphql({
+    query: CREATE_QUESTION_MUTATION,
+    token,
+    variables: {
+      input: {
+        topicId,
+        prompt: 'What is a closure?',
+        ...input,
+      },
+    },
+  });
+
+  return response.body.data.createQuestion;
 }
 
 beforeAll(async () => {
@@ -286,4 +326,21 @@ describe('Topics GraphQL ownership', () => {
 
     expect(storedTopic).toBeNull();
   });
+});
+
+it('returns questions nested under their topic', async () => {
+  const user = await registerUser('nested@test.com');
+  const topic = await createTopic(user.token);
+
+  await createQuestion(user.token, topic.id, { prompt: 'First question' });
+  await createQuestion(user.token, topic.id, { prompt: 'Second question' });
+
+  const response = await graphql({
+    query: TOPIC_WITH_QUESTIONS_QUERY,
+    token: user.token,
+    variables: { id: topic.id },
+  });
+
+  expect(response.body.errors).toBeUndefined();
+  expect(response.body.data.topic.questions).toHaveLength(2);
 });

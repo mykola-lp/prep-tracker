@@ -8,6 +8,8 @@ import { initModels } from '../../../models/index.js';
 import { DATABASE_URL, TEST_DATABASE_URL } from '../../../utils/config.js';
 import { createSequelize } from '../../../utils/db.js';
 
+// @todo: src/__tests__/helpers/graphqlHelpers.js
+
 const REGISTER_MUTATION = `#graphql
   mutation Register($input: RegisterInput!) {
     register(input: $input) {
