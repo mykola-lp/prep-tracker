@@ -2,13 +2,7 @@ import { requireAuth, findOwnedRecord } from '../auth/authorization.js';
 
 export async function getTopic({ models, user, id }) {
   requireAuth(user);
-
-  return models.Topic.findOne({
-    where: {
-      id,
-      userId: user.id,
-    },
-  });
+  return findOwnedRecord(models.Topic, id, user.id);
 }
 
 export async function getTopics({ models, user }) {
@@ -32,7 +26,6 @@ export async function createTopic({ models, user, input }) {
 
 export async function updateTopic({ models, user, id, input }) {
   requireAuth(user);
-
   const topic = await findOwnedRecord(models.Topic, id, user.id);
 
   return topic.update(input);

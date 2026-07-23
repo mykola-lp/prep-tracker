@@ -1,9 +1,9 @@
-import * as topicService from './service.js';
+import { getTopic, getTopics, createTopic, updateTopic, deleteTopic } from './service.js';
 
 export const topicResolvers = {
   Query: {
     topic: async (_, { id }, context) => {
-      return topicService.getTopic({
+      return getTopic({
         models: context.models,
         user: context.user,
         id,
@@ -11,7 +11,7 @@ export const topicResolvers = {
     },
 
     topics: async (_, __, context) => {
-      return topicService.getTopics({
+      return getTopics({
         models: context.models,
         user: context.user,
       });
@@ -20,7 +20,7 @@ export const topicResolvers = {
 
   Mutation: {
     createTopic: (_, { input }, context) => {
-      return topicService.createTopic({
+      return createTopic({
         models: context.models,
         user: context.user,
         input,
@@ -28,7 +28,7 @@ export const topicResolvers = {
     },
 
     updateTopic: (_, { id, input }, context) => {
-      return topicService.updateTopic({
+      return updateTopic({
         models: context.models,
         user: context.user,
         id,
@@ -37,7 +37,7 @@ export const topicResolvers = {
     },
 
     deleteTopic: (_, { id }, context) => {
-      return topicService.deleteTopic({
+      return deleteTopic({
         models: context.models,
         user: context.user,
         id,
