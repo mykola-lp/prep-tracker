@@ -25,46 +25,52 @@ const CREATE_TOPIC_MUTATION = `#graphql
     createTopic(input: $input) {
       id
       title
-      description
-      status
-      deadline
     }
   }
 `;
 
-const UPDATE_TOPIC_MUTATION = `#graphql
-  mutation UpdateTopic($id: ID!, $input: UpdateTopicInput!) {
-    updateTopic(id: $id, input: $input) {
+const CREATE_QUESTION_MUTATION = `#graphql
+  mutation CreateQuestion($input: CreateQuestionInput!) {
+    createQuestion(input: $input) {
       id
-      title
+      prompt
+      answer
       status
     }
   }
 `;
 
-const DELETE_TOPIC_MUTATION = `#graphql
-  mutation DeleteTopic($id: ID!) {
-    deleteTopic(id: $id)
-  }
-`;
-
-const TOPICS_QUERY = `#graphql
-  query Topics {
-    topics {
+const UPDATE_QUESTION_MUTATION = `#graphql
+  mutation UpdateQuestion($id: ID!, $input: UpdateQuestionInput!) {
+    updateQuestion(id: $id, input: $input) {
       id
-      title
-      description
+      prompt
       status
     }
   }
 `;
 
-const TOPIC_QUERY = `#graphql
-  query Topic($id: ID!) {
-    topic(id: $id) {
+const DELETE_QUESTION_MUTATION = `#graphql
+  mutation DeleteQuestion($id: ID!) {
+    deleteQuestion(id: $id)
+  }
+`;
+
+const QUESTIONS_QUERY = `#graphql
+  query Questions {
+    questions {
       id
-      title
-      description
+      prompt
+      status
+    }
+  }
+`;
+
+const QUESTION_QUERY = `#graphql
+  query Question($id: ID!) {
+    question(id: $id) {
+      id
+      prompt
       status
     }
   }
@@ -108,13 +114,28 @@ async function createTopic(token, input = {}) {
     variables: {
       input: {
         title: 'JavaScript',
-        description: 'Core language topics',
         ...input,
       },
     },
   });
 
   return response.body.data.createTopic;
+}
+
+async function createQuestion(token, topicId, input = {}) {
+  const response = await graphql({
+    query: CREATE_QUESTION_MUTATION,
+    token,
+    variables: {
+      input: {
+        topicId,
+        prompt: 'What is a closure?',
+        ...input,
+      },
+    },
+  });
+
+  return response.body.data?.createQuestion;
 }
 
 beforeAll(async () => {
@@ -140,7 +161,7 @@ afterAll(async () => {
   }
 });
 
-describe('Topics GraphQL ownership', () => {
+describe('Questions GraphQL ownership', () => {
   beforeEach(async () => {
     await models.User.destroy({
       where: {},
@@ -149,12 +170,13 @@ describe('Topics GraphQL ownership', () => {
     });
   });
 
-  it('requires authentication to create a topic', async () => {
+  it('requires authentication to create a question', async () => {
     const response = await graphql({
-      query: CREATE_TOPIC_MUTATION,
+      query: CREATE_QUESTION_MUTATION,
       variables: {
         input: {
-          title: 'JavaScript',
+          topicId: 1,
+          prompt: 'What is a closure?',
         },
       },
     });
@@ -164,68 +186,91 @@ describe('Topics GraphQL ownership', () => {
     expect(response.body.errors[0].extensions.code).toBe('UNAUTHENTICATED');
   });
 
-  it('creates a topic for the current user', async () => {
+  it('creates a question for a topic owned by the current user', async () => {
     const user = await registerUser('owner@test.com');
-
     const topic = await createTopic(user.token);
 
-    expect(topic.title).toBe('JavaScript');
+    const question = await createQuestion(user.token, topic.id);
 
-    const storedTopic = await models.Topic.findByPk(topic.id);
+    expect(question.prompt).toBe('What is a closure?');
 
-    expect(storedTopic.userId).toBe(Number(user.user.id));
+    const storedQuestion = await models.Question.findByPk(question.id);
+
+    expect(storedQuestion.userId).toBe(Number(user.user.id));
+    expect(storedQuestion.topicId).toBe(Number(topic.id));
   });
 
-  it('lists only topics owned by the current user', async () => {
-    const userA = await registerUser('user-a@test.com');
-    const userB = await registerUser('user-b@test.com');
-
-    await createTopic(userA.token, {
-      title: 'User A Topic',
-    });
+  it('rejects creating a question under another user topic', async () => {
+    const userA = await registerUser('topic-owner@test.com');
+    const userB = await registerUser('question-creator@test.com');
+    const topic = await createTopic(userA.token);
 
     const response = await graphql({
-      query: TOPICS_QUERY,
-      token: userB.token,
-    });
-
-    expect(response.body.errors).toBeUndefined();
-    expect(response.body.data.topics).toEqual([]);
-  });
-
-  it('does not return another user topic by id', async () => {
-    const userA = await registerUser('detail-a@test.com');
-    const userB = await registerUser('detail-b@test.com');
-    const topic = await createTopic(userA.token, {
-      title: 'Private Topic',
-    });
-
-    const response = await graphql({
-      query: TOPIC_QUERY,
+      query: CREATE_QUESTION_MUTATION,
       token: userB.token,
       variables: {
-        id: topic.id,
+        input: {
+          topicId: topic.id,
+          prompt: 'Trying to attach to a foreign topic',
+        },
       },
     });
 
     expect(response.body.errors).toBeDefined();
     expect(response.body.errors[0].message).toBe('Not found');
     expect(response.body.errors[0].extensions.code).toBe('NOT_FOUND');
-    expect(response.body.data.topic).toBeNull();
+    expect(response.body.data?.createQuestion).toBeFalsy();
   });
 
-  it('rejects updating another user topic', async () => {
+  it('lists only questions owned by the current user', async () => {
+    const userA = await registerUser('user-a@test.com');
+    const userB = await registerUser('user-b@test.com');
+    const topicA = await createTopic(userA.token);
+
+    await createQuestion(userA.token, topicA.id);
+
+    const response = await graphql({
+      query: QUESTIONS_QUERY,
+      token: userB.token,
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.questions).toEqual([]);
+  });
+
+  it('does not return another user question by id', async () => {
+    const userA = await registerUser('detail-a@test.com');
+    const userB = await registerUser('detail-b@test.com');
+    const topic = await createTopic(userA.token);
+    const question = await createQuestion(userA.token, topic.id);
+
+    const response = await graphql({
+      query: QUESTION_QUERY,
+      token: userB.token,
+      variables: {
+        id: question.id,
+      },
+    });
+
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toBe('Not found');
+    expect(response.body.errors[0].extensions.code).toBe('NOT_FOUND');
+    expect(response.body.data.question).toBeNull();
+  });
+
+  it('rejects updating another user question', async () => {
     const userA = await registerUser('update-a@test.com');
     const userB = await registerUser('update-b@test.com');
     const topic = await createTopic(userA.token);
+    const question = await createQuestion(userA.token, topic.id);
 
     const response = await graphql({
-      query: UPDATE_TOPIC_MUTATION,
+      query: UPDATE_QUESTION_MUTATION,
       token: userB.token,
       variables: {
-        id: topic.id,
+        id: question.id,
         input: {
-          status: 'learning',
+          status: 'answered',
         },
       },
     });
@@ -235,16 +280,17 @@ describe('Topics GraphQL ownership', () => {
     expect(response.body.errors[0].extensions.code).toBe('NOT_FOUND');
   });
 
-  it('rejects deleting another user topic', async () => {
+  it('rejects deleting another user question', async () => {
     const userA = await registerUser('delete-a@test.com');
     const userB = await registerUser('delete-b@test.com');
     const topic = await createTopic(userA.token);
+    const question = await createQuestion(userA.token, topic.id);
 
     const response = await graphql({
-      query: DELETE_TOPIC_MUTATION,
+      query: DELETE_QUESTION_MUTATION,
       token: userB.token,
       variables: {
-        id: topic.id,
+        id: question.id,
       },
     });
 
@@ -253,37 +299,38 @@ describe('Topics GraphQL ownership', () => {
     expect(response.body.errors[0].extensions.code).toBe('NOT_FOUND');
   });
 
-  it('updates and deletes topics owned by the current user', async () => {
+  it('updates and deletes questions owned by the current user', async () => {
     const user = await registerUser('owner-actions@test.com');
     const topic = await createTopic(user.token);
+    const question = await createQuestion(user.token, topic.id);
 
     const updateResponse = await graphql({
-      query: UPDATE_TOPIC_MUTATION,
+      query: UPDATE_QUESTION_MUTATION,
       token: user.token,
       variables: {
-        id: topic.id,
+        id: question.id,
         input: {
-          status: 'learning',
+          status: 'answered',
         },
       },
     });
 
     expect(updateResponse.body.errors).toBeUndefined();
-    expect(updateResponse.body.data.updateTopic.status).toBe('learning');
+    expect(updateResponse.body.data.updateQuestion.status).toBe('answered');
 
     const deleteResponse = await graphql({
-      query: DELETE_TOPIC_MUTATION,
+      query: DELETE_QUESTION_MUTATION,
       token: user.token,
       variables: {
-        id: topic.id,
+        id: question.id,
       },
     });
 
     expect(deleteResponse.body.errors).toBeUndefined();
-    expect(deleteResponse.body.data.deleteTopic).toBe(true);
+    expect(deleteResponse.body.data.deleteQuestion).toBe(true);
 
-    const storedTopic = await models.Topic.findByPk(topic.id);
+    const storedQuestion = await models.Question.findByPk(question.id);
 
-    expect(storedTopic).toBeNull();
+    expect(storedQuestion).toBeNull();
   });
 });

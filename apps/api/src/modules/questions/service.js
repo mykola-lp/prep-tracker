@@ -1,8 +1,4 @@
-import {
-  requireAuth,
-  findOwnedRecord,
-  NotFoundError,
-} from '../auth/authorization.js';
+import { requireAuth, findOwnedRecord, NotFoundError } from '../auth/authorization.js';
 
 export async function getQuestion({ models, user, id }) {
   requireAuth(user);
