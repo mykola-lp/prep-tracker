@@ -4,7 +4,7 @@ export const topicTypeDefs = [
     id: ID!
     title: String!
     description: String
-    status: String!
+    status: ProgressStatus!
     deadline: String
     questions: [Question!]!
     notes: [Note!]!
@@ -20,13 +20,13 @@ export const topicTypeDefs = [
   input UpdateTopicInput {
     title: String
     description: String
-    status: String
+    status: ProgressStatus
     deadline: String
   }
 
   extend type Query {
     topic(id: ID!): Topic
-    topics(tagId: ID, status: String): [Topic!]!
+    topics(tagId: ID, status: ProgressStatus): [Topic!]!
   }
 
   extend type Mutation {
