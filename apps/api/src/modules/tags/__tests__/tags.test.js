@@ -78,7 +78,7 @@ const REMOVE_TAG_FROM_TOPIC_MUTATION = `#graphql
 `;
 
 const TOPICS_BY_TAG_QUERY = `#graphql
-  query TopicsByTag($tagId: ID, $status: String) {
+  query TopicsByTag($tagId: ID, $status: ProgressStatus) {
     topics(tagId: $tagId, status: $status) {
       id
       title
@@ -98,7 +98,7 @@ const CREATE_QUESTION_MUTATION = `#graphql
 `;
 
 const QUESTIONS_BY_TAG_QUERY = `#graphql
-  query QuestionsByTag($tagId: ID, $status: String) {
+  query QuestionsByTag($tagId: ID, $status: ProgressStatus) {
     questions(tagId: $tagId, status: $status) {
       id
       prompt

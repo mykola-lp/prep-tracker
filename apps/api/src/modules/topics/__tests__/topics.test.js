@@ -40,6 +40,7 @@ const UPDATE_TOPIC_MUTATION = `#graphql
       id
       title
       status
+      deadline
     }
   }
 `;
@@ -342,5 +343,164 @@ describe('Topics GraphQL ownership', () => {
 
     expect(response.body.errors).toBeUndefined();
     expect(response.body.data.topic.questions).toHaveLength(2);
+  });
+});
+
+describe('Topics GraphQL progress status and deadline', () => {
+  it('updates a topic status to learning', async () => {
+    const user = await registerUser('topic-learning@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          status: 'learning',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.updateTopic.status).toBe('learning');
+  });
+
+  it('updates a topic status to reviewing', async () => {
+    const user = await registerUser('topic-reviewing@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          status: 'reviewing',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.updateTopic.status).toBe('reviewing');
+  });
+
+  it('updates a topic status to done', async () => {
+    const user = await registerUser('topic-done@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          status: 'done',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.updateTopic.status).toBe('done');
+  });
+
+  it('sets a topic deadline', async () => {
+    const user = await registerUser('topic-set-deadline@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          deadline: '2026-08-15',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.updateTopic.deadline).toBe('2026-08-15');
+  });
+
+  it('changes a topic deadline', async () => {
+    const user = await registerUser('topic-change-deadline@test.com');
+    const topic = await createTopic(user.token, {
+      deadline: '2026-08-15',
+    });
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          deadline: '2026-09-01',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.updateTopic.deadline).toBe('2026-09-01');
+  });
+
+  it('rejects an invalid topic status', async () => {
+    const user = await registerUser('topic-invalid-status@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: { status: 'answered' },
+      },
+    });
+
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toContain(
+      'Value "answered" does not exist in "ProgressStatus" enum'
+    );
+    expect(response.body.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+  });
+
+  it('rejects an invalid topic deadline date', async () => {
+    const user = await registerUser('topic-invalid-date@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          deadline: '2026-02-31',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toBe('Invalid deadline date');
+    expect(response.body.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+  });
+
+  it('rejects a topic deadline with the wrong format', async () => {
+    const user = await registerUser('topic-wrong-date-format@test.com');
+    const topic = await createTopic(user.token);
+
+    const response = await graphql({
+      query: UPDATE_TOPIC_MUTATION,
+      token: user.token,
+      variables: {
+        id: topic.id,
+        input: {
+          deadline: '28-07-2026',
+        },
+      },
+    });
+
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toBe('Invalid deadline date');
+    expect(response.body.errors[0].extensions.code).toBe('BAD_USER_INPUT');
   });
 });
