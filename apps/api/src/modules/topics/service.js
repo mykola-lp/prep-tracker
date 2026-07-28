@@ -2,6 +2,8 @@ import { requireAuth, findOwnedRecord } from '../auth/authorization.js';
 
 import { buildTagFilterInclude } from '../tags/filters.js';
 
+import { validateProgressInput } from '../progress/validation.js';
+
 export async function getTopic({ models, user, id }) {
   requireAuth(user);
   return findOwnedRecord(models.Topic, id, user.id);
@@ -25,6 +27,8 @@ export async function getTopics({ models, user, tagId, status }) {
 export async function createTopic({ models, user, input }) {
   requireAuth(user);
 
+  validateProgressInput(input);
+
   return models.Topic.create({
     ...input,
     userId: user.id,
@@ -34,6 +38,8 @@ export async function createTopic({ models, user, input }) {
 export async function updateTopic({ models, user, id, input }) {
   requireAuth(user);
   const topic = await findOwnedRecord(models.Topic, id, user.id);
+
+  validateProgressInput(input);
 
   return topic.update(input);
 }
