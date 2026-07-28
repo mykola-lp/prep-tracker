@@ -10,6 +10,13 @@ import { tagsTypeDefs } from '../modules/tags/schema.js';
 // that together define the "shape" of queries that are executed against
 // your data.
 const rootTypeDefs = `#graphql
+  enum ProgressStatus {
+    new
+    learning
+    reviewing
+    done
+  }
+
   type Query {
     _empty: String
   }

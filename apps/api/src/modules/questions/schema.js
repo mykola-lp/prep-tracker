@@ -5,7 +5,7 @@ export const questionsTypeDefs = [
     topicId: ID!
     prompt: String!
     answer: String
-    status: String!
+    status: ProgressStatus!
     deadline: String
     notes: [Note!]!
     tags: [Tag!]!
@@ -20,13 +20,13 @@ export const questionsTypeDefs = [
   input UpdateQuestionInput {
     prompt: String
     answer: String
-    status: String
+    status: ProgressStatus
     deadline: String
   }
 
   extend type Query {
     question(id: ID!): Question
-    questions(tagId: ID, status: String): [Question!]!
+    questions(tagId: ID, status: ProgressStatus): [Question!]!
   }
 
   extend type Mutation {
