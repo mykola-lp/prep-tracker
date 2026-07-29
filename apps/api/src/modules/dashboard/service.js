@@ -46,58 +46,25 @@ export async function getProgressSummary({ models, user }) {
   };
 }
 
-async function getUpcomingDeadlines({ models, userId, today }) {
-  const [upcomingTopics, upcomingQuestions] = await Promise.all([
-    models.Topic.findAll({
-      attributes: ['id', 'title', 'status', 'deadline'],
-      where: {
-        userId,
-        deadline: { [Op.gte]: today },
-        status: { [Op.ne]: 'done' },
-      },
-      order: [['deadline', 'ASC']],
-      limit: 10,
-    }),
-    models.Question.findAll({
-      attributes: ['id', 'prompt', 'status', 'deadline'],
-      where: {
-        userId,
-        deadline: { [Op.gte]: today },
-        status: { [Op.ne]: 'done' },
-      },
-      order: [['deadline', 'ASC']],
-      limit: 10,
-    }),
+async function getTotals({ models, userId }) {
+  const [topics, questions, notes, completedTopics, completedQuestions] = await Promise.all([
+    models.Topic.count({ where: { userId } }),
+    models.Question.count({ where: { userId } }),
+    models.Note.count({ where: { userId } }),
+    models.Topic.count({ where: { userId, status: 'done' } }),
+    models.Question.count({ where: { userId, status: 'done' } }),
   ]);
 
-  const sortByDeadline = (a, b) => new Date(a.deadline) - new Date(b.deadline);
-
-  const upcomingDeadlines = [
-    ...upcomingTopics.map(mapTopicItem),
-    ...upcomingQuestions.map(mapQuestionItem),
-  ].sort(sortByDeadline);
-
-  return upcomingDeadlines;
+  return { topics, questions, notes, completedTopics, completedQuestions };
 }
 
-function mapTopicItem(topic) {
-  return {
-    id: topic.id,
-    type: 'topic',
-    title: topic.title,
-    status: topic.status,
-    deadline: topic.deadline,
-  };
-}
+async function getStatusBreakdown({ models, userId }) {
+  const [topicsByStatus, questionsByStatus] = await Promise.all([
+    countByStatus(models.Topic, userId),
+    countByStatus(models.Question, userId),
+  ]);
 
-function mapQuestionItem(question) {
-  return {
-    id: question.id,
-    type: 'question',
-    title: question.prompt,
-    status: question.status,
-    deadline: question.deadline,
-  };
+  return { topicsByStatus, questionsByStatus };
 }
 
 async function getDashboardItems({ models, userId, today }) {
@@ -191,26 +158,58 @@ async function getDashboardItems({ models, userId, today }) {
   };
 }
 
-// TODO: hardcoded timezone — temporary until the User model gets a timeZone field
-// Once user.timeZone is added — pass it instead of the default.
-function todayDateOnly(timeZone = 'Europe/Kyiv') {
-  const formatter = new Intl.DateTimeFormat('en-CA', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
+async function getUpcomingDeadlines({ models, userId, today }) {
+  const [upcomingTopics, upcomingQuestions] = await Promise.all([
+    models.Topic.findAll({
+      attributes: ['id', 'title', 'status', 'deadline'],
+      where: {
+        userId,
+        deadline: { [Op.gte]: today },
+        status: { [Op.ne]: 'done' },
+      },
+      order: [['deadline', 'ASC']],
+      limit: 10,
+    }),
+    models.Question.findAll({
+      attributes: ['id', 'prompt', 'status', 'deadline'],
+      where: {
+        userId,
+        deadline: { [Op.gte]: today },
+        status: { [Op.ne]: 'done' },
+      },
+      order: [['deadline', 'ASC']],
+      limit: 10,
+    }),
+  ]);
 
-  return formatter.format(new Date()); // en-CA locale gives YYYY-MM-DD format
+  const sortByDeadline = (a, b) => new Date(a.deadline) - new Date(b.deadline);
+
+  const upcomingDeadlines = [
+    ...upcomingTopics.map(mapTopicItem),
+    ...upcomingQuestions.map(mapQuestionItem),
+  ].sort(sortByDeadline);
+
+  return upcomingDeadlines;
 }
 
-function normalizeStatusCounts(rows) {
-  const counts = new Map(rows.map((row) => [row.status, Number(row.get('count'))]));
+function mapTopicItem(topic) {
+  return {
+    id: topic.id,
+    type: 'topic',
+    title: topic.title,
+    status: topic.status,
+    deadline: topic.deadline,
+  };
+}
 
-  return STATUSES.map((status) => ({
-    status,
-    count: counts.get(status) ?? 0,
-  }));
+function mapQuestionItem(question) {
+  return {
+    id: question.id,
+    type: 'question',
+    title: question.prompt,
+    status: question.status,
+    deadline: question.deadline,
+  };
 }
 
 async function countByStatus(model, userId) {
@@ -223,23 +222,24 @@ async function countByStatus(model, userId) {
   return normalizeStatusCounts(rows);
 }
 
-async function getTotals({ models, userId }) {
-  const [topics, questions, notes, completedTopics, completedQuestions] = await Promise.all([
-    models.Topic.count({ where: { userId } }),
-    models.Question.count({ where: { userId } }),
-    models.Note.count({ where: { userId } }),
-    models.Topic.count({ where: { userId, status: 'done' } }),
-    models.Question.count({ where: { userId, status: 'done' } }),
-  ]);
+function normalizeStatusCounts(rows) {
+  const counts = new Map(rows.map((row) => [row.status, Number(row.get('count'))]));
 
-  return { topics, questions, notes, completedTopics, completedQuestions };
+  return STATUSES.map((status) => ({
+    status,
+    count: counts.get(status) ?? 0,
+  }));
 }
 
-async function getStatusBreakdown({ models, userId }) {
-  const [topicsByStatus, questionsByStatus] = await Promise.all([
-    countByStatus(models.Topic, userId),
-    countByStatus(models.Question, userId),
-  ]);
+// TODO: hardcoded timezone — temporary until the User model gets a timeZone field
+// Once user.timeZone is added — pass it instead of the default.
+function todayDateOnly(timeZone = 'Europe/Kyiv') {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
 
-  return { topicsByStatus, questionsByStatus };
+  return formatter.format(new Date()); // en-CA locale gives YYYY-MM-DD format
 }
