@@ -10,38 +10,19 @@ export async function getDashboardSummary({ models, user }) {
   const userId = user.id;
   const today = todayDateOnly();
 
-  const [
-    totalTopics,
-    totalQuestions,
-    totalNotes,
-    completedTopics,
-    completedQuestions,
-    topicsByStatus,
-    questionsByStatus,
-    dashboardItems,
-  ] = await Promise.all([
-    models.Topic.count({ where: { userId } }),
-    models.Question.count({ where: { userId } }),
-    models.Note.count({ where: { userId } }),
-    models.Topic.count({ where: { userId, status: 'done' } }),
-    models.Question.count({ where: { userId, status: 'done' } }),
-    countByStatus(models.Topic, userId),
-    countByStatus(models.Question, userId),
+  const [totals, statusBreakdown, dashboardItems] = await Promise.all([
+    getTotals({ models, userId }),
+    getStatusBreakdown({ models, userId }),
     getDashboardItems({ models, userId, today }),
   ]);
 
   return {
     totals: {
-      topics: totalTopics,
-      questions: totalQuestions,
-      notes: totalNotes,
-      completedTopics,
-      completedQuestions,
+      ...totals,
       overdueItems: dashboardItems.overdueItems.length,
       reviewItems: dashboardItems.reviewItems.length,
     },
-    topicsByStatus,
-    questionsByStatus,
+    ...statusBreakdown,
     ...dashboardItems,
   };
 }
@@ -240,4 +221,25 @@ async function countByStatus(model, userId) {
   });
 
   return normalizeStatusCounts(rows);
+}
+
+async function getTotals({ models, userId }) {
+  const [topics, questions, notes, completedTopics, completedQuestions] = await Promise.all([
+    models.Topic.count({ where: { userId } }),
+    models.Question.count({ where: { userId } }),
+    models.Note.count({ where: { userId } }),
+    models.Topic.count({ where: { userId, status: 'done' } }),
+    models.Question.count({ where: { userId, status: 'done' } }),
+  ]);
+
+  return { topics, questions, notes, completedTopics, completedQuestions };
+}
+
+async function getStatusBreakdown({ models, userId }) {
+  const [topicsByStatus, questionsByStatus] = await Promise.all([
+    countByStatus(models.Topic, userId),
+    countByStatus(models.Question, userId),
+  ]);
+
+  return { topicsByStatus, questionsByStatus };
 }
