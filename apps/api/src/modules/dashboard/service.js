@@ -210,8 +210,17 @@ async function getDashboardItems({ models, userId, today }) {
   };
 }
 
-function todayDateOnly() {
-  return new Date().toISOString().slice(0, 10);
+// TODO: hardcoded timezone — temporary until the User model gets a timeZone field
+// Once user.timeZone is added — pass it instead of the default.
+function todayDateOnly(timeZone = 'Europe/Kyiv') {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
+  return formatter.format(new Date()); // en-CA locale gives YYYY-MM-DD format
 }
 
 function normalizeStatusCounts(rows) {
