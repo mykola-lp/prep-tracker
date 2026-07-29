@@ -20,6 +20,14 @@ export const dashboardTypeDefs = [
     type: String!
     title: String!
     status: ProgressStatus!
+    deadline: String
+  }
+
+  type UpcomingDeadlineItem {
+    id: ID!
+    type: String!
+    title: String!
+    status: ProgressStatus!
     deadline: String!
   }
 
@@ -35,7 +43,7 @@ export const dashboardTypeDefs = [
   type ProgressSummary {
     topicsByStatus: [ProgressStatusCount!]!
     questionsByStatus: [ProgressStatusCount!]!
-    upcomingDeadlines: [DashboardItem!]!
+    upcomingDeadlines: [UpcomingDeadlineItem!]!
   }
 
   extend type Query {
