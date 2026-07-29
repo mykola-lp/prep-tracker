@@ -5,7 +5,17 @@ export const dashboardTypeDefs = [
     count: Int!
   }
 
-  type UpcomingDeadlineItem {
+  type DashboardTotals {
+    topics: Int!
+    questions: Int!
+    notes: Int!
+    completedTopics: Int!
+    completedQuestions: Int!
+    overdueItems: Int!
+    reviewItems: Int!
+  }
+
+  type DashboardItem {
     id: ID!
     type: String!
     title: String!
@@ -13,13 +23,23 @@ export const dashboardTypeDefs = [
     deadline: String!
   }
 
+  type DashboardSummary {
+    totals: DashboardTotals!
+    topicsByStatus: [ProgressStatusCount!]!
+    questionsByStatus: [ProgressStatusCount!]!
+    overdueItems: [DashboardItem!]!
+    reviewItems: [DashboardItem!]!
+    upcomingDeadlines: [DashboardItem!]!
+  }
+
   type ProgressSummary {
     topicsByStatus: [ProgressStatusCount!]!
     questionsByStatus: [ProgressStatusCount!]!
-    upcomingDeadlines: [UpcomingDeadlineItem!]!
+    upcomingDeadlines: [DashboardItem!]!
   }
 
   extend type Query {
+    dashboardSummary: DashboardSummary!
     progressSummary: ProgressSummary!
   }
 `,
