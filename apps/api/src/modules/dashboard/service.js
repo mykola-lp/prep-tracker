@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, fn, col } from 'sequelize';
 
 import { requireAuth } from '../auth/authorization.js';
 
@@ -45,5 +45,107 @@ export async function getProgressSummary({ models, user }) {
     upcomingDeadlines: [...upcomingTopics, ...upcomingQuestions].sort((a, b) =>
       a.deadline.localeCompare(b.deadline)
     ),
+  };
+}
+
+function mapTopicItem(topic) {
+  return {
+    id: topic.id,
+    type: 'topic',
+    title: topic.title,
+    status: topic.status,
+    deadline: topic.deadline,
+  };
+}
+
+function mapQuestionItem(question) {
+  return {
+    id: question.id,
+    type: 'question',
+    title: question.prompt,
+    status: question.status,
+    deadline: question.deadline,
+  };
+}
+
+async function getDashboardItems({ models, userId, today }) {
+  const overdueTopics = await models.Topic.findAll({
+    attributes: ['id', 'title', 'status', 'deadline'],
+    where: {
+      userId,
+      deadline: { [Op.lt]: today },
+      status: { [Op.ne]: 'done' },
+    },
+    order: [['deadline', 'ASC']],
+  });
+
+  const overdueQuestions = await models.Question.findAll({
+    attributes: ['id', 'prompt', 'status', 'deadline'],
+    where: {
+      userId,
+      deadline: { [Op.lt]: today },
+      status: { [Op.ne]: 'done' },
+    },
+    order: [['deadline', 'ASC']],
+  });
+
+  const reviewTopics = await models.Topic.findAll({
+    attributes: ['id', 'title', 'status', 'deadline'],
+    where: {
+      userId,
+      status: 'reviewing',
+    },
+    order: [['deadline', 'ASC']],
+  });
+
+  const reviewQuestions = await models.Question.findAll({
+    attributes: ['id', 'prompt', 'status', 'deadline'],
+    where: {
+      userId,
+      status: 'reviewing',
+    },
+    order: [['deadline', 'ASC']],
+  });
+
+  const upcomingTopics = await models.Topic.findAll({
+    attributes: ['id', 'title', 'status', 'deadline'],
+    where: {
+      userId,
+      deadline: { [Op.gte]: today },
+      status: { [Op.ne]: 'done' },
+    },
+    order: [['deadline', 'ASC']],
+    limit: 10,
+  });
+
+  const upcomingQuestions = await models.Question.findAll({
+    attributes: ['id', 'prompt', 'status', 'deadline'],
+    where: {
+      userId,
+      deadline: { [Op.gte]: today },
+      status: { [Op.ne]: 'done' },
+    },
+    order: [['deadline', 'ASC']],
+    limit: 10,
+  });
+
+  const sortByDeadline = (a, b) => new Date(a.deadline) - new Date(b.deadline);
+
+  const overdueItems = [
+    ...overdueTopics.map(mapTopicItem),
+    ...overdueQuestions.map(mapQuestionItem),
+  ].sort(sortByDeadline);
+
+  const reviewItems = [...reviewTopics.map(mapTopicItem), ...reviewQuestions.map(mapQuestionItem)];
+
+  const upcomingDeadlines = [
+    ...upcomingTopics.map(mapTopicItem),
+    ...upcomingQuestions.map(mapQuestionItem),
+  ].sort(sortByDeadline);
+
+  return {
+    overdueItems,
+    reviewItems,
+    upcomingDeadlines,
   };
 }
