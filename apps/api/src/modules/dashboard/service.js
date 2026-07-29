@@ -4,6 +4,58 @@ import { requireAuth } from '../auth/authorization.js';
 
 const STATUSES = ['new', 'learning', 'reviewing', 'done'];
 
+export async function getDashboardSummary({ models, user }) {
+  requireAuth(user);
+
+  const userId = user.id;
+  const today = todayDateOnly();
+
+  const [
+    totalTopics,
+    totalQuestions,
+    totalNotes,
+    completedTopics,
+    completedQuestions,
+    topicsByStatus,
+    questionsByStatus,
+    dashboardItems,
+  ] = await Promise.all([
+    models.Topic.count({ where: { userId } }),
+    models.Question.count({ where: { userId } }),
+    models.Note.count({ where: { userId } }),
+    models.Topic.count({ where: { userId, status: 'done' } }),
+    models.Question.count({ where: { userId, status: 'done' } }),
+    countByStatus(models.Topic, userId),
+    countByStatus(models.Question, userId),
+    getDashboardItems({ models, userId, today }),
+  ]);
+
+  return {
+    totals: {
+      topics: totalTopics,
+      questions: totalQuestions,
+      notes: totalNotes,
+      completedTopics,
+      completedQuestions,
+      overdueItems: dashboardItems.overdueItems.length,
+      reviewItems: dashboardItems.reviewItems.length,
+    },
+    topicsByStatus,
+    questionsByStatus,
+    ...dashboardItems,
+  };
+}
+
+export async function getProgressSummary({ models, user }) {
+  const summary = await getDashboardSummary({ models, user });
+
+  return {
+    topicsByStatus: summary.topicsByStatus,
+    questionsByStatus: summary.questionsByStatus,
+    upcomingDeadlines: summary.upcomingDeadlines,
+  };
+}
+
 function mapTopicItem(topic) {
   return {
     id: topic.id,
@@ -127,50 +179,4 @@ async function countByStatus(model, userId) {
   });
 
   return normalizeStatusCounts(rows);
-}
-
-export async function getDashboardSummary({ models, user }) {
-  requireAuth(user);
-
-  const userId = user.id;
-  const today = todayDateOnly();
-
-  const [
-    totalTopics,
-    totalQuestions,
-    totalNotes,
-    completedTopics,
-    completedQuestions,
-    topicsByStatus,
-    questionsByStatus,
-    dashboardItems,
-  ] = await Promise.all([
-    models.Topic.count({ where: { userId } }),
-    models.Question.count({ where: { userId } }),
-    models.Note.count({ where: { userId } }),
-    models.Topic.count({ where: { userId, status: 'done' } }),
-    models.Question.count({ where: { userId, status: 'done' } }),
-    countByStatus(models.Topic, userId),
-    countByStatus(models.Question, userId),
-    getDashboardItems({ models, userId, today }),
-  ]);
-
-  return {
-    totals: {
-      topics: totalTopics,
-      questions: totalQuestions,
-      notes: totalNotes,
-      completedTopics,
-      completedQuestions,
-      overdueItems: dashboardItems.overdueItems.length,
-      reviewItems: dashboardItems.reviewItems.length,
-    },
-    topicsByStatus,
-    questionsByStatus,
-    ...dashboardItems,
-  };
-}
-
-export async function getProgressSummary({ models, user }) {
-  return getDashboardSummary({ models, user });
 }
