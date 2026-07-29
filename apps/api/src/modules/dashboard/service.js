@@ -4,50 +4,6 @@ import { requireAuth } from '../auth/authorization.js';
 
 const STATUSES = ['new', 'learning', 'reviewing', 'done'];
 
-function buildStatusCounts(items) {
-  return STATUSES.map((status) => ({
-    status,
-    count: items.filter((item) => item.status === status).length,
-  }));
-}
-
-export async function getProgressSummary({ models, user }) {
-  requireAuth(user);
-
-  const [topics, questions] = await Promise.all([
-    models.Topic.findAll({ where: { userId: user.id } }),
-    models.Question.findAll({ where: { userId: user.id } }),
-  ]);
-
-  const upcomingTopics = topics
-    .filter((topic) => topic.deadline)
-    .map((topic) => ({
-      id: topic.id,
-      type: 'topic',
-      title: topic.title,
-      status: topic.status,
-      deadline: topic.deadline,
-    }));
-
-  const upcomingQuestions = questions
-    .filter((question) => question.deadline)
-    .map((question) => ({
-      id: question.id,
-      type: 'question',
-      title: question.prompt,
-      status: question.status,
-      deadline: question.deadline,
-    }));
-
-  return {
-    topicsByStatus: buildStatusCounts(topics),
-    questionsByStatus: buildStatusCounts(questions),
-    upcomingDeadlines: [...upcomingTopics, ...upcomingQuestions].sort((a, b) =>
-      a.deadline.localeCompare(b.deadline)
-    ),
-  };
-}
-
 function mapTopicItem(topic) {
   return {
     id: topic.id,
@@ -148,4 +104,73 @@ async function getDashboardItems({ models, userId, today }) {
     reviewItems,
     upcomingDeadlines,
   };
+}
+
+function todayDateOnly() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function normalizeStatusCounts(rows) {
+  const counts = new Map(rows.map((row) => [row.status, Number(row.get('count'))]));
+
+  return STATUSES.map((status) => ({
+    status,
+    count: counts.get(status) ?? 0,
+  }));
+}
+
+async function countByStatus(model, userId) {
+  const rows = await model.findAll({
+    attributes: ['status', [fn('COUNT', col('id')), 'count']],
+    where: { userId },
+    group: ['status'],
+  });
+
+  return normalizeStatusCounts(rows);
+}
+
+export async function getDashboardSummary({ models, user }) {
+  requireAuth(user);
+
+  const userId = user.id;
+  const today = todayDateOnly();
+
+  const [
+    totalTopics,
+    totalQuestions,
+    totalNotes,
+    completedTopics,
+    completedQuestions,
+    topicsByStatus,
+    questionsByStatus,
+    dashboardItems,
+  ] = await Promise.all([
+    models.Topic.count({ where: { userId } }),
+    models.Question.count({ where: { userId } }),
+    models.Note.count({ where: { userId } }),
+    models.Topic.count({ where: { userId, status: 'done' } }),
+    models.Question.count({ where: { userId, status: 'done' } }),
+    countByStatus(models.Topic, userId),
+    countByStatus(models.Question, userId),
+    getDashboardItems({ models, userId, today }),
+  ]);
+
+  return {
+    totals: {
+      topics: totalTopics,
+      questions: totalQuestions,
+      notes: totalNotes,
+      completedTopics,
+      completedQuestions,
+      overdueItems: dashboardItems.overdueItems.length,
+      reviewItems: dashboardItems.reviewItems.length,
+    },
+    topicsByStatus,
+    questionsByStatus,
+    ...dashboardItems,
+  };
+}
+
+export async function getProgressSummary({ models, user }) {
+  return getDashboardSummary({ models, user });
 }
