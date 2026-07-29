@@ -77,65 +77,74 @@ function mapQuestionItem(question) {
 }
 
 async function getDashboardItems({ models, userId, today }) {
-  const overdueTopics = await models.Topic.findAll({
-    attributes: ['id', 'title', 'status', 'deadline'],
-    where: {
-      userId,
-      deadline: { [Op.lt]: today },
-      status: { [Op.ne]: 'done' },
-    },
-    order: [['deadline', 'ASC']],
-  });
+  const [
+    overdueTopics,
+    overdueQuestions,
+    reviewTopics,
+    reviewQuestions,
+    upcomingTopics,
+    upcomingQuestions,
+  ] = await Promise.all([
+    models.Topic.findAll({
+      attributes: ['id', 'title', 'status', 'deadline'],
+      where: {
+        userId,
+        deadline: { [Op.lt]: today },
+        status: { [Op.ne]: 'done' },
+      },
+      order: [['deadline', 'ASC']],
+    }),
 
-  const overdueQuestions = await models.Question.findAll({
-    attributes: ['id', 'prompt', 'status', 'deadline'],
-    where: {
-      userId,
-      deadline: { [Op.lt]: today },
-      status: { [Op.ne]: 'done' },
-    },
-    order: [['deadline', 'ASC']],
-  });
+    models.Question.findAll({
+      attributes: ['id', 'prompt', 'status', 'deadline'],
+      where: {
+        userId,
+        deadline: { [Op.lt]: today },
+        status: { [Op.ne]: 'done' },
+      },
+      order: [['deadline', 'ASC']],
+    }),
 
-  const reviewTopics = await models.Topic.findAll({
-    attributes: ['id', 'title', 'status', 'deadline'],
-    where: {
-      userId,
-      status: 'reviewing',
-    },
-    order: [['deadline', 'ASC']],
-  });
+    models.Topic.findAll({
+      attributes: ['id', 'title', 'status', 'deadline'],
+      where: {
+        userId,
+        status: 'reviewing',
+      },
+      order: [['deadline', 'ASC']],
+    }),
 
-  const reviewQuestions = await models.Question.findAll({
-    attributes: ['id', 'prompt', 'status', 'deadline'],
-    where: {
-      userId,
-      status: 'reviewing',
-    },
-    order: [['deadline', 'ASC']],
-  });
+    models.Question.findAll({
+      attributes: ['id', 'prompt', 'status', 'deadline'],
+      where: {
+        userId,
+        status: 'reviewing',
+      },
+      order: [['deadline', 'ASC']],
+    }),
 
-  const upcomingTopics = await models.Topic.findAll({
-    attributes: ['id', 'title', 'status', 'deadline'],
-    where: {
-      userId,
-      deadline: { [Op.gte]: today },
-      status: { [Op.ne]: 'done' },
-    },
-    order: [['deadline', 'ASC']],
-    limit: 10,
-  });
+    models.Topic.findAll({
+      attributes: ['id', 'title', 'status', 'deadline'],
+      where: {
+        userId,
+        deadline: { [Op.gte]: today },
+        status: { [Op.ne]: 'done' },
+      },
+      order: [['deadline', 'ASC']],
+      limit: 10,
+    }),
 
-  const upcomingQuestions = await models.Question.findAll({
-    attributes: ['id', 'prompt', 'status', 'deadline'],
-    where: {
-      userId,
-      deadline: { [Op.gte]: today },
-      status: { [Op.ne]: 'done' },
-    },
-    order: [['deadline', 'ASC']],
-    limit: 10,
-  });
+    models.Question.findAll({
+      attributes: ['id', 'prompt', 'status', 'deadline'],
+      where: {
+        userId,
+        deadline: { [Op.gte]: today },
+        status: { [Op.ne]: 'done' },
+      },
+      order: [['deadline', 'ASC']],
+      limit: 10,
+    }),
+  ]);
 
   const sortByDeadline = (a, b) => new Date(a.deadline) - new Date(b.deadline);
 
