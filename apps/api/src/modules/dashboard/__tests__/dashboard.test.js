@@ -84,6 +84,62 @@ const PROGRESS_SUMMARY_QUERY = `#graphql
   }
 `;
 
+const DASHBOARD_SUMMARY_QUERY = `#graphql
+  query DashboardSummary {
+    dashboardSummary {
+      totals {
+        topics
+        questions
+        notes
+        completedTopics
+        completedQuestions
+        overdueItems
+        reviewItems
+      }
+      topicsByStatus {
+        status
+        count
+      }
+      questionsByStatus {
+        status
+        count
+      }
+      overdueItems {
+        id
+        type
+        title
+        status
+        deadline
+      }
+      reviewItems {
+        id
+        type
+        title
+        status
+        deadline
+      }
+      upcomingDeadlines {
+        id
+        type
+        title
+        status
+        deadline
+      }
+    }
+  }
+`;
+
+const CREATE_NOTE_MUTATION = `#graphql
+  mutation CreateNote($input: CreateNoteInput!) {
+    createNote(input: $input) {
+      id
+      body
+      topicId
+      questionId
+    }
+  }
+`;
+
 let app;
 let sequelize;
 let models;
@@ -170,6 +226,18 @@ async function updateQuestion(token, id, input) {
   });
 
   return response.body.data.updateQuestion;
+}
+
+async function createNote(token, input) {
+  const response = await graphql({
+    query: CREATE_NOTE_MUTATION,
+    token,
+    variables: {
+      input,
+    },
+  });
+
+  return response.body.data.createNote;
 }
 
 function countByStatus(statusCounts, status) {
@@ -345,5 +413,105 @@ describe('Dashboard GraphQL progress summary', () => {
     expect(countByStatus(response.body.data.progressSummary.questionsByStatus, 'new')).toBe(0);
     expect(response.body.data.progressSummary.upcomingDeadlines).toHaveLength(1);
     expect(response.body.data.progressSummary.upcomingDeadlines[0].title).toBe('Private Topic');
+  });
+
+  it('requires authentication for dashboard summary', async () => {
+    const response = await graphql({
+      query: DASHBOARD_SUMMARY_QUERY,
+    });
+
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toBe('Unauthorized');
+    expect(response.body.errors[0].extensions.code).toBe('UNAUTHENTICATED');
+  });
+
+  it('returns dashboard totals for the current user', async () => {
+    const user = await registerUser('dashboard-totals@test.com');
+    const topic = await createTopic(user.token, { title: 'JavaScript' });
+    const doneTopic = await createTopic(user.token, { title: 'React' });
+
+    await updateTopic(user.token, doneTopic.id, { status: 'done' });
+    await createQuestion(user.token, topic.id, { prompt: 'What is closure?' });
+    await createNote(user.token, { topicId: topic.id, body: 'Scope note' });
+
+    const response = await graphql({
+      query: DASHBOARD_SUMMARY_QUERY,
+      token: user.token,
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.dashboardSummary.totals).toMatchObject({
+      topics: 2,
+      questions: 1,
+      notes: 1,
+      completedTopics: 1,
+      completedQuestions: 0,
+    });
+  });
+
+  it('returns overdue and review items', async () => {
+    const user = await registerUser('dashboard-overdue@test.com');
+    const topic = await createTopic(user.token, {
+      title: 'Algorithms',
+      deadline: '2026-07-01',
+    });
+    const question = await createQuestion(user.token, topic.id, {
+      prompt: 'What is binary search?',
+      deadline: '2026-07-02',
+    });
+
+    await updateTopic(user.token, topic.id, { status: 'reviewing' });
+    await updateQuestion(user.token, question.id, { status: 'learning' });
+
+    const response = await graphql({
+      query: DASHBOARD_SUMMARY_QUERY,
+      token: user.token,
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.dashboardSummary.overdueItems).toHaveLength(2);
+    expect(response.body.data.dashboardSummary.reviewItems).toHaveLength(1);
+    expect(response.body.data.dashboardSummary.reviewItems[0]).toMatchObject({
+      type: 'topic',
+      title: 'Algorithms',
+      status: 'reviewing',
+    });
+  });
+
+  it('does not include another user dashboard data', async () => {
+    const userA = await registerUser('dashboard-owner@test.com');
+    const userB = await registerUser('dashboard-other@test.com');
+
+    await createTopic(userA.token, { title: 'Private Topic' });
+
+    const foreignTopic = await createTopic(userB.token, {
+      title: 'Foreign Topic',
+      deadline: '2026-07-01',
+    });
+
+    await updateTopic(userB.token, foreignTopic.id, { status: 'done' });
+    await createQuestion(userB.token, foreignTopic.id, {
+      prompt: 'Foreign Question',
+    });
+
+    await createNote(userB.token, {
+      topicId: foreignTopic.id,
+      body: 'Foreign note',
+    });
+
+    const response = await graphql({
+      query: DASHBOARD_SUMMARY_QUERY,
+      token: userA.token,
+    });
+
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data.dashboardSummary.totals).toMatchObject({
+      topics: 1,
+      questions: 0,
+      notes: 0,
+      completedTopics: 0,
+      completedQuestions: 0,
+    });
+    expect(response.body.data.dashboardSummary.overdueItems).toEqual([]);
   });
 });
