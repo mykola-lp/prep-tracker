@@ -20,16 +20,19 @@ export function HomePage() {
             Sign in
           </Link>
 
-          <button className="home-secondary-button" type="button" disabled>
+          <Link className="home-secondary-button" to={routePaths.register}>
             Create account
-          </button>
+          </Link>
         </div>
 
-        <Link className="home-secondary-link" to={routePaths.health}>
-          Health
-        </Link>
+        <p className="home-note">You can now create an account and jump straight into the app.</p>
 
-        <p className="home-note">Account creation is available through the API for now.</p>
+        <Link className="home-secondary-link" to={routePaths.health}>
+          <span className="home-secondary-link-label">Health</span>
+          <span className="home-secondary-link-arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
       </section>
     </main>
   );

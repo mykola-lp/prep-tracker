@@ -7,6 +7,7 @@ import { PublicOnlyRoute } from './PublicOnlyRoute';
 import { routePaths } from './routePaths';
 
 import { LoginPage } from '@/features/auth/pages/LoginPage';
+import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
 import { HealthPage } from '@/features/health/pages/HealthPage';
 import { HomePage } from '@/features/home/pages/HomePage';
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: routePaths.login,
         element: <LoginPage />,
+      },
+      {
+        path: routePaths.register,
+        element: <RegisterPage />,
       },
     ],
   },
