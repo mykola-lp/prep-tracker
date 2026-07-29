@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { AppLayout } from '@/components/AppLayout';
 
-import { HomeRedirect } from './HomeRedirect';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicOnlyRoute } from './PublicOnlyRoute';
 import { routePaths } from './routePaths';
@@ -10,6 +9,7 @@ import { routePaths } from './routePaths';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
 import { HealthPage } from '@/features/health/pages/HealthPage';
+import { HomePage } from '@/features/home/pages/HomePage';
 import { NotesPage } from '@/features/notes/pages/NotesPage';
 import { QuestionsPage } from '@/features/questions/pages/QuestionsPage';
 import { TopicsPage } from '@/features/topics/pages/TopicsPage';
@@ -17,7 +17,7 @@ import { TopicsPage } from '@/features/topics/pages/TopicsPage';
 export const router = createBrowserRouter([
   {
     path: routePaths.home,
-    element: <HomeRedirect />,
+    element: <HomePage />,
   },
   {
     element: <PublicOnlyRoute />,
