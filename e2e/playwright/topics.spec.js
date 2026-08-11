@@ -129,10 +129,14 @@ test.describe('topics flow', () => {
     await page.getByRole('link', { name: 'Topics' }).click();
 
     await expect(page.getByRole('heading', { name: 'Manage your study roadmap' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'JavaScript' })).toBeVisible();
-    await expect(page.getByText('learning')).toBeVisible();
-    await expect(page.getByText('2026-08-20')).toBeVisible();
-    await expect(page.getByText('Core language topics')).toBeVisible();
+    const topicCard = page
+      .getByRole('article')
+      .filter({ has: page.getByRole('heading', { name: 'JavaScript' }) });
+
+    await expect(topicCard.getByRole('heading', { name: 'JavaScript' })).toBeVisible();
+    await expect(topicCard.getByText('learning', { exact: true })).toBeVisible();
+    await expect(topicCard.getByText('2026-08-20')).toBeVisible();
+    await expect(topicCard.getByText('Core language topics')).toBeVisible();
   });
 
   test('creates, edits, and deletes a topic through the UI', async ({ page }) => {
