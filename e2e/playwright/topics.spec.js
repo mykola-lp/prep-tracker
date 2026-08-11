@@ -87,6 +87,7 @@ test.describe('topics flow', () => {
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Login' }).click();
+    await expect(page).toHaveURL('/dashboard');
 
     await page.goto('/topics');
 
@@ -110,6 +111,7 @@ test.describe('topics flow', () => {
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Login' }).click();
+    await expect(page).toHaveURL('/dashboard');
 
     await page.goto('/topics');
 
@@ -190,6 +192,7 @@ test.describe('topics flow', () => {
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Login' }).click();
+    await expect(page).toHaveURL('/dashboard');
 
     await page.goto('/topics');
 
@@ -211,6 +214,7 @@ test.describe('topics flow', () => {
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Login' }).click();
+    await expect(page).toHaveURL('/dashboard');
 
     await page.goto('/topics');
     await page.getByRole('button', { name: 'Create topic' }).click();
