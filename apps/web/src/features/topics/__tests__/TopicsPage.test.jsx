@@ -120,12 +120,6 @@ describe('TopicsPage', () => {
     fireEvent.change(screen.getByLabelText('Description'), {
       target: { value: 'SQL and indexing' },
     });
-    fireEvent.change(screen.getByLabelText('Status'), {
-      target: { value: 'reviewing' },
-    });
-    fireEvent.change(screen.getByLabelText('Deadline'), {
-      target: { value: '2026-09-01' },
-    });
     fireEvent.click(screen.getByRole('button', { name: 'Create topic' }));
 
     await waitFor(() => {
@@ -134,8 +128,7 @@ describe('TopicsPage', () => {
           input: {
             title: 'Databases',
             description: 'SQL and indexing',
-            status: 'reviewing',
-            deadline: '2026-09-01',
+            deadline: null,
           },
         },
       });
@@ -143,12 +136,17 @@ describe('TopicsPage', () => {
 
     await waitFor(() => expect(refetch).toHaveBeenCalled());
 
+    expect(screen.getByRole('heading', { name: 'Create topic' })).toBeInTheDocument();
+
     fireEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
     expect(screen.getByRole('heading', { name: 'Edit topic' })).toBeInTheDocument();
     expect(screen.getByDisplayValue('Algorithms')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'Algorithms updated' },
+    });
+    fireEvent.change(screen.getByLabelText('Deadline'), {
+      target: { value: '2026-09-02' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Update topic' }));
 
@@ -159,8 +157,8 @@ describe('TopicsPage', () => {
           input: {
             title: 'Algorithms updated',
             description: null,
+            deadline: '2026-09-02',
             status: 'new',
-            deadline: null,
           },
         },
       });
