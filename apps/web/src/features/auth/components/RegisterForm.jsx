@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { routePaths } from '@/app/router/routePaths';
 import { storage } from '@/lib/storage';
@@ -18,25 +18,43 @@ export function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [error, setError] = useState('');
 
-  const [register] = useMutation(REGISTER_MUTATION);
+  const [register, { loading }] = useMutation(REGISTER_MUTATION);
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setError('');
 
-    const { data } = await register({
-      variables: {
-        input: {
-          email,
-          password,
-          displayName: displayName || null,
+    if (!email.trim()) {
+      setError('Email is required.');
+      return;
+    }
+
+    if (!password) {
+      setError('Password is required.');
+      return;
+    }
+
+    try {
+      const { data } = await register({
+        variables: {
+          input: {
+            email,
+            password,
+            displayName: displayName || null,
+          },
         },
-      },
-    });
+      });
 
-    storage.setToken(data.register.token);
-    setUser(data.register.user);
-    navigate(routePaths.dashboard);
+      storage.setToken(data.register.token);
+      setUser(data.register.user);
+      navigate(routePaths.dashboard, { replace: true });
+    } catch (err) {
+      const message =
+        err?.graphQLErrors?.[0]?.message || err?.message || 'Unable to create account.';
+      setError(message);
+    }
   }
 
   return (
@@ -50,7 +68,13 @@ export function RegisterForm() {
           Set up your profile and start tracking your prep in one place.
         </p>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
+        {error ? (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <label className={styles.field}>
             <span className={styles.label}>Display name</span>
 
@@ -74,6 +98,7 @@ export function RegisterForm() {
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
+              required
             />
           </label>
 
@@ -87,11 +112,13 @@ export function RegisterForm() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="••••••••"
+              required
+              minLength={8}
             />
           </label>
 
-          <button className={styles.button} type="submit">
-            Create account
+          <button className={styles.button} type="submit" disabled={loading}>
+            {loading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 

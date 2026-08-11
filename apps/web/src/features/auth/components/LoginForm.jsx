@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { routePaths } from '@/app/router/routePaths';
 import { storage } from '@/lib/storage';
 import { LOGIN_MUTATION } from '../graphql/loginMutation';
 import { useAuthStore } from '../store/authStore';
@@ -10,31 +11,58 @@ import styles from './Form.module.css';
 
 export function LoginForm() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const setUser = useAuthStore((state) => state.setUser);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const [login] = useMutation(LOGIN_MUTATION);
+  const [login, { loading }] = useMutation(LOGIN_MUTATION);
+
+  function getRedirectTarget() {
+    const from = location.state?.from;
+
+    if (from?.pathname) {
+      return `${from.pathname}${from.search ?? ''}${from.hash ?? ''}`;
+    }
+
+    return routePaths.dashboard;
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setError('');
 
-    const { data } = await login({
-      variables: {
-        input: {
-          email,
-          password,
+    if (!email.trim()) {
+      setError('Email is required.');
+      return;
+    }
+
+    if (!password) {
+      setError('Password is required.');
+      return;
+    }
+
+    try {
+      const { data } = await login({
+        variables: {
+          input: {
+            email,
+            password,
+          },
         },
-      },
-    });
+      });
 
-    storage.setToken(data.login.token);
+      storage.setToken(data.login.token);
+      setUser(data.login.user);
 
-    setUser(data.login.user);
-
-    navigate('/dashboard');
+      navigate(getRedirectTarget(), { replace: true });
+    } catch (err) {
+      const message = err?.graphQLErrors?.[0]?.message || err?.message || 'Unable to sign in.';
+      setError(message);
+    }
   }
 
   return (
@@ -46,7 +74,13 @@ export function LoginForm() {
 
         <p className={styles.lead}>Use your account to continue into the dashboard.</p>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
+        {error ? (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <label className={styles.field}>
             <span className={styles.label}>Email</span>
             <input
@@ -56,6 +90,7 @@ export function LoginForm() {
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
+              required
             />
           </label>
 
@@ -68,13 +103,19 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               placeholder="••••••••"
+              required
+              minLength={8}
             />
           </label>
 
-          <button className={styles.button} type="submit">
-            Login
+          <button className={styles.button} type="submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Login'}
           </button>
         </form>
+
+        <p className={styles.footer}>
+          Need an account? <Link to={routePaths.register}>Create one</Link>
+        </p>
       </section>
     </main>
   );

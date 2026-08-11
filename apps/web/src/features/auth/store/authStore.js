@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { storage } from '@/lib/storage';
+
 export const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
@@ -12,7 +14,7 @@ export const useAuthStore = create((set) => ({
   },
 
   logout() {
-    localStorage.removeItem('token');
+    storage.removeToken();
 
     set({
       user: null,

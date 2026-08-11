@@ -244,6 +244,12 @@ function countByStatus(statusCounts, status) {
   return statusCounts.find((item) => item.status === status)?.count;
 }
 
+function addDays(days) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 beforeAll(async () => {
   sequelize = createSequelize(TEST_DATABASE_URL || DATABASE_URL);
 
@@ -341,19 +347,23 @@ describe('Dashboard GraphQL progress summary', () => {
 
   it('returns upcoming deadlines sorted by date', async () => {
     const user = await registerUser('deadline-summary@test.com');
+    const earliestDeadline = addDays(7);
+    const middleDeadline = addDays(14);
+    const latestDeadline = addDays(21);
+
     const laterTopic = await createTopic(user.token, {
       title: 'React',
-      deadline: '2026-09-10',
+      deadline: latestDeadline,
     });
     const earlierTopic = await createTopic(user.token, {
       title: 'JavaScript',
-      deadline: '2026-08-01',
+      deadline: earliestDeadline,
     });
     const topic = await createTopic(user.token, { title: 'Databases' });
 
     await createQuestion(user.token, topic.id, {
       prompt: 'What is an index?',
-      deadline: '2026-08-15',
+      deadline: middleDeadline,
     });
 
     const response = await graphql({
@@ -367,18 +377,18 @@ describe('Dashboard GraphQL progress summary', () => {
         id: earlierTopic.id,
         type: 'topic',
         title: 'JavaScript',
-        deadline: '2026-08-01',
+        deadline: earliestDeadline,
       },
       {
         type: 'question',
         title: 'What is an index?',
-        deadline: '2026-08-15',
+        deadline: middleDeadline,
       },
       {
         id: laterTopic.id,
         type: 'topic',
         title: 'React',
-        deadline: '2026-09-10',
+        deadline: latestDeadline,
       },
     ]);
   });
@@ -386,20 +396,21 @@ describe('Dashboard GraphQL progress summary', () => {
   it('does not include another user progress data', async () => {
     const userA = await registerUser('summary-owner@test.com');
     const userB = await registerUser('summary-other@test.com');
+    const userDeadline = addDays(7);
 
     await createTopic(userA.token, {
       title: 'Private Topic',
-      deadline: '2026-08-01',
+      deadline: userDeadline,
     });
 
     const foreignTopic = await createTopic(userB.token, {
       title: 'Other Topic',
-      deadline: '2026-07-30',
+      deadline: addDays(3),
     });
     await updateTopic(userB.token, foreignTopic.id, { status: 'done' });
     await createQuestion(userB.token, foreignTopic.id, {
       prompt: 'Other question',
-      deadline: '2026-08-15',
+      deadline: addDays(14),
     });
 
     const response = await graphql({
