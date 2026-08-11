@@ -126,7 +126,7 @@ test.describe('topics flow', () => {
     await page.getByRole('button', { name: 'Login' }).click();
     await expect(page).toHaveURL('/dashboard');
 
-    await page.goto('/topics');
+    await page.getByRole('link', { name: 'Topics' }).click();
 
     await expect(page.getByRole('heading', { name: 'Manage your study roadmap' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'JavaScript' })).toBeVisible();
@@ -150,7 +150,7 @@ test.describe('topics flow', () => {
     await page.getByRole('button', { name: 'Login' }).click();
     await expect(page).toHaveURL('/dashboard');
 
-    await page.goto('/topics');
+    await page.getByRole('link', { name: 'Topics' }).click();
 
     await page.getByLabel('Title').fill('System design');
     await page.getByLabel('Description').fill('APIs, databases, scaling');
@@ -231,7 +231,7 @@ test.describe('topics flow', () => {
     await page.getByRole('button', { name: 'Login' }).click();
     await expect(page).toHaveURL('/dashboard');
 
-    await page.goto('/topics');
+    await page.getByRole('link', { name: 'Topics' }).click();
 
     await expect(page.getByText('No topics yet.')).toBeVisible();
     await expect(page.getByText('Create your first topic to start organizing prep.')).toBeVisible();
@@ -253,7 +253,7 @@ test.describe('topics flow', () => {
     await page.getByRole('button', { name: 'Login' }).click();
     await expect(page).toHaveURL('/dashboard');
 
-    await page.goto('/topics');
+    await page.getByRole('link', { name: 'Topics' }).click();
     await page.getByRole('button', { name: 'Create topic' }).click();
 
     await expect(page.getByRole('alert')).toHaveText('Topic title is required.');
