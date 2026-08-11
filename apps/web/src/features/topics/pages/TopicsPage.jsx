@@ -38,7 +38,6 @@ function toMutationInput(formState) {
   return {
     title: formState.title.trim(),
     description: formState.description.trim() || null,
-    status: formState.status,
     deadline: formState.deadline || null,
   };
 }
@@ -99,7 +98,10 @@ export function TopicsPage() {
         await updateTopic({
           variables: {
             id: editingTopic.id,
-            input,
+            input: {
+              ...input,
+              status: formState.status,
+            },
           },
         });
       } else {
@@ -205,22 +207,26 @@ export function TopicsPage() {
               />
             </label>
 
-            <label className={styles.field}>
-              <span className={styles.label}>Status</span>
-              <select
-                className={styles.select}
-                value={formState.status}
-                onChange={(event) =>
-                  setFormState((current) => ({ ...current, status: event.target.value }))
-                }
-              >
-                {STATUS_OPTIONS.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {editingTopic ? (
+              <label className={styles.field}>
+                <span className={styles.label}>Status</span>
+                <select
+                  className={styles.select}
+                  value={formState.status}
+                  onChange={(event) =>
+                    setFormState((current) => ({ ...current, status: event.target.value }))
+                  }
+                >
+                  {STATUS_OPTIONS.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <p className={styles.muted}>Status defaults to new when you create a topic.</p>
+            )}
 
             <label className={styles.field}>
               <span className={styles.label}>Deadline</span>

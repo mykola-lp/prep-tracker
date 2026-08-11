@@ -158,12 +158,11 @@ test.describe('topics flow', () => {
 
     await page.getByLabel('Title').fill('System design');
     await page.getByLabel('Description').fill('APIs, databases, scaling');
-    await page.getByLabel('Status').selectOption('reviewing');
     await page.getByLabel('Deadline').fill('2026-08-25');
     await page.getByRole('button', { name: 'Create topic' }).click();
 
     await expect(page.getByRole('heading', { name: 'System design' })).toBeVisible();
-    await expect(page.getByText('reviewing')).toBeVisible();
+    await expect(page.getByText('new', { exact: true })).toBeVisible();
     await expect(page.getByText('2026-08-25')).toBeVisible();
     await expect(page.getByText('APIs, databases, scaling')).toBeVisible();
 
