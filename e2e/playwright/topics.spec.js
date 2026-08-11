@@ -27,6 +27,18 @@ const CREATE_TOPIC_MUTATION = `#graphql
   }
 `;
 
+const UPDATE_TOPIC_MUTATION = `#graphql
+  mutation UpdateTopic($id: ID!, $input: UpdateTopicInput!) {
+    updateTopic(id: $id, input: $input) {
+      id
+      title
+      description
+      status
+      deadline
+    }
+  }
+`;
+
 async function registerUser(request, user) {
   const response = await request.post('/api/graphql', {
     data: {
@@ -66,6 +78,28 @@ async function createTopic(request, token, input) {
   return body.data.createTopic;
 }
 
+async function updateTopic(request, token, id, input) {
+  const response = await request.post('/api/graphql', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      query: UPDATE_TOPIC_MUTATION,
+      variables: {
+        id,
+        input,
+      },
+    },
+  });
+
+  expect(response.ok()).toBeTruthy();
+
+  const body = await response.json();
+  expect(body.errors).toBeUndefined();
+
+  return body.data.updateTopic;
+}
+
 test.describe('topics flow', () => {
   test('renders topics list with metadata for the current user', async ({ page }) => {
     const email = `topics-${randomUUID()}@example.com`;
@@ -76,11 +110,14 @@ test.describe('topics flow', () => {
       displayName: 'Topics User',
     });
 
-    await createTopic(page.request, user.token, {
+    const topic = await createTopic(page.request, user.token, {
       title: 'JavaScript',
       description: 'Core language topics',
-      status: 'learning',
       deadline: '2026-08-20',
+    });
+
+    await updateTopic(page.request, user.token, topic.id, {
+      status: 'learning',
     });
 
     await page.goto('/login');
