@@ -5,9 +5,13 @@ import { routePaths } from './routePaths';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export function PublicOnlyRoute() {
-  const isAuthenticated = useAuth((state) => state.isAuthenticated);
+  const authStatus = useAuth((state) => state.authStatus);
 
-  if (isAuthenticated) {
+  if (authStatus === 'checking') {
+    return null;
+  }
+
+  if (authStatus === 'authenticated') {
     return <Navigate to={routePaths.dashboard} replace />;
   }
 

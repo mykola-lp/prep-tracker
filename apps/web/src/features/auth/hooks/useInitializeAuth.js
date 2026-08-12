@@ -9,13 +9,14 @@ export function useInitializeAuth() {
   const client = useApolloClient();
 
   const setUser = useAuthStore((state) => state.setUser);
-  const logout = useAuthStore((state) => state.logout);
+  const setGuest = useAuthStore((state) => state.setGuest);
 
   useEffect(() => {
     async function initialize() {
       const token = storage.getToken();
 
       if (!token) {
+        setGuest();
         return;
       }
 
@@ -26,16 +27,16 @@ export function useInitializeAuth() {
         });
 
         if (!data?.me) {
-          logout();
+          setGuest();
           return;
         }
 
         setUser(data.me);
       } catch {
-        logout();
+        setGuest();
       }
     }
 
     initialize();
-  }, [client, setUser, logout]);
+  }, [client, setGuest, setUser]);
 }
