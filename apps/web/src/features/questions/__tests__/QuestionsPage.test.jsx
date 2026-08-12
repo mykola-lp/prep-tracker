@@ -113,7 +113,6 @@ describe('QuestionsPage', () => {
           input: {
             topicId: 'topic-1',
             prompt: 'How does the event loop work?',
-            answer: 'It processes tasks and microtasks.',
             deadline: null,
           },
         },

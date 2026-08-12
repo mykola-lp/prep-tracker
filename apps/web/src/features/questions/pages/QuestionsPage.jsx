@@ -43,6 +43,14 @@ function toMutationInput(formState) {
   };
 }
 
+function toCreateMutationInput(formState) {
+  return {
+    topicId: formState.topicId,
+    prompt: formState.prompt.trim(),
+    deadline: formState.deadline || null,
+  };
+}
+
 function humanizeDeadline(deadline) {
   return deadline || 'No deadline';
 }
@@ -133,7 +141,7 @@ export function QuestionsPage() {
       } else {
         await createQuestion({
           variables: {
-            input,
+            input: toCreateMutationInput(formState),
           },
         });
       }
