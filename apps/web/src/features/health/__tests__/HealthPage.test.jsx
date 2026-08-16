@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { HealthPage } from '../pages/HealthPage';
@@ -25,11 +25,13 @@ describe('HealthPage', () => {
     vi.restoreAllMocks();
   });
 
-  test('shows the initial loading state', () => {
+  test('shows the initial loading state', async () => {
     render(<HealthPage />);
 
     expect(screen.getByText('Infrastructure is wired.')).toBeInTheDocument();
     expect(screen.getAllByText('loading')).toHaveLength(2);
+
+    await waitFor(() => expect(screen.getByText('ok')).toBeInTheDocument());
   });
 
   test('renders API health status from GraphQL response', async () => {
