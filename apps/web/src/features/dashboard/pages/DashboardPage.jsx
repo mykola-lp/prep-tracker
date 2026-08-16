@@ -2,29 +2,33 @@ import { useQuery } from '@apollo/client/react';
 
 import { DASHBOARD_SUMMARY_QUERY } from '../graphql/dashboardSummaryQuery';
 
-import { AttentionList } from '../components/AttentionList';
-import { StatusBreakdownList } from '../components/StatusBreakdownList';
+import { buildDashboardViewModel } from '../view/dashboardViewModel';
+
 import { SummaryCard } from '../components/SummaryCard';
+import { StatusBreakdownList } from '../components/StatusBreakdownList';
+import { AttentionList } from '../components/AttentionList';
+
+import styles from './dashboard.module.css';
 
 export function DashboardPage() {
   const { data, loading, error } = useQuery(DASHBOARD_SUMMARY_QUERY);
 
   if (loading) {
-    return <p className="dashboard-state">Loading dashboard...</p>;
+    return (
+      <section className={styles.page}>
+        <div className={styles.stateCard}>Loading dashboard...</div>
+      </section>
+    );
   }
 
   if (error) {
     return (
-      <div role="alert" className="dashboard-state dashboard-state-error">
-        Unable to load dashboard.
-      </div>
+      <section className={styles.page}>
+        <div className={`${styles.stateCard} ${styles.stateCardError}`} role="alert">
+          Unable to load dashboard.
+        </div>
+      </section>
     );
-  }
-
-  const summary = data?.dashboardSummary;
-
-  if (!summary) {
-    return <p className="dashboard-state">No dashboard data yet.</p>;
   }
 
   const {
@@ -34,23 +38,25 @@ export function DashboardPage() {
     overdueItems,
     reviewItems,
     upcomingDeadlines,
-  } = summary;
+    attentionCount,
+  } = buildDashboardViewModel(data?.dashboardSummary);
 
   return (
-    <div className="dashboard-page">
-      <header className="dashboard-hero">
+    <section className={styles.page}>
+      <header className={styles.hero}>
         <div>
-          <p className="dashboard-eyebrow">Overview</p>
+          <p className={styles.eyebrow}>Dashboard</p>
 
-          <h1 className="dashboard-title">Dashboard</h1>
+          <h1 className={styles.title}>Quick prep overview</h1>
 
-          <p className="dashboard-lead">
-            Quick view of your prep progress and what needs attention.
+          <p className={styles.lead}>
+            See the current state of your topics, questions, deadlines, and items that need
+            attention at a glance.
           </p>
         </div>
       </header>
 
-      <section className="dashboard-grid dashboard-grid-summary">
+      <section className={styles.summaryGrid} aria-label="Summary metrics">
         <SummaryCard
           label="Topics"
           value={totals.topics}
@@ -63,44 +69,77 @@ export function DashboardPage() {
           hint={`${totals.completedQuestions} completed`}
         />
 
-        <SummaryCard label="Notes" value={totals.notes} hint="Stored study notes" />
+        <SummaryCard label="Notes" value={totals.notes} hint="Captured notes" />
 
         <SummaryCard
           label="Needs attention"
-          value={totals.overdueItems + totals.reviewItems}
-          hint="Overdue + reviewing"
+          value={attentionCount}
+          hint={`${totals.overdueItems} overdue, ${totals.reviewItems} in review`}
         />
       </section>
 
-      <section className="dashboard-grid dashboard-grid-main">
-        <div className="dashboard-stack">
+      <div className={styles.grid}>
+        <div className={styles.stack}>
           <StatusBreakdownList title="Topics by status" items={topicsByStatus} />
           <StatusBreakdownList title="Questions by status" items={questionsByStatus} />
         </div>
 
-        <div className="dashboard-stack">
-          <AttentionList
-            title="Overdue items"
-            items={overdueItems}
-            emptyLabel="No overdue items."
-            variant="overdue"
-          />
+        <div className={styles.stack}>
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <p className={styles.sectionKicker}>Attention</p>
+                <h2 className={styles.sectionTitle}>Overdue items</h2>
+              </div>
 
-          <AttentionList
-            title="Review items"
-            items={reviewItems}
-            emptyLabel="Nothing currently in review."
-            variant="review"
-          />
+              <p className={styles.sectionLead}>{overdueItems.length} items</p>
+            </div>
 
-          <AttentionList
-            title="Upcoming deadlines"
-            items={upcomingDeadlines}
-            emptyLabel="No upcoming deadlines."
-            variant="upcoming"
-          />
+            <AttentionList
+              title="Overdue"
+              items={overdueItems}
+              emptyLabel="No overdue items."
+              variant="overdue"
+            />
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <p className={styles.sectionKicker}>Review</p>
+                <h2 className={styles.sectionTitle}>Items in review</h2>
+              </div>
+
+              <p className={styles.sectionLead}>{reviewItems.length} items</p>
+            </div>
+
+            <AttentionList
+              title="Review"
+              items={reviewItems}
+              emptyLabel="Nothing currently in review."
+              variant="review"
+            />
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <p className={styles.sectionKicker}>Schedule</p>
+                <h2 className={styles.sectionTitle}>Upcoming deadlines</h2>
+              </div>
+
+              <p className={styles.sectionLead}>{upcomingDeadlines.length} items</p>
+            </div>
+
+            <AttentionList
+              title="Upcoming"
+              items={upcomingDeadlines}
+              emptyLabel="No upcoming deadlines."
+              variant="upcoming"
+            />
+          </section>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }

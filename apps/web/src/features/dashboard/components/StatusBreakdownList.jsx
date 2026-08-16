@@ -1,21 +1,14 @@
-const STATUS_LABELS = {
-  new: 'New',
-  learning: 'Learning',
-  reviewing: 'Reviewing',
-  done: 'Done',
-};
+import styles from '../pages/dashboard.module.css';
 
 export function StatusBreakdownList({ title, items }) {
   return (
-    <section className="dashboard-card">
-      <div className="dashboard-card-head">
-        <h2 className="dashboard-card-title">{title}</h2>
-      </div>
+    <section className={styles.card}>
+      <h2 className={styles.cardTitle}>{title}</h2>
 
-      <ul className="dashboard-status-list">
+      <ul className={styles.statusList}>
         {items.map((item) => (
-          <li key={item.status} className="dashboard-status-row">
-            <span>{STATUS_LABELS[item.status] ?? item.status}</span>
+          <li key={item.status} className={styles.statusRow}>
+            <span>{item.label}</span>
             <strong>{item.count}</strong>
           </li>
         ))}

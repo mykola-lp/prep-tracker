@@ -1,36 +1,36 @@
-const TYPE_LABELS = {
-  topic: 'Topic',
-  question: 'Question',
+import styles from '../pages/dashboard.module.css';
+
+const VARIANT_CLASS = {
+  overdue: 'itemRowOverdue',
+  review: 'itemRowReview',
+  upcoming: 'itemRowUpcoming',
 };
 
 export function AttentionList({ title, items, emptyLabel, variant }) {
   return (
-    <section className="dashboard-card">
-      <div className="dashboard-card-head">
-        <h2 className="dashboard-card-title">{title}</h2>
-      </div>
+    <section className={styles.card}>
+      <h2 className={styles.cardTitle}>{title}</h2>
 
       {items.length === 0 ? (
-        <p className="dashboard-empty">{emptyLabel}</p>
+        <p className={styles.emptyState}>{emptyLabel}</p>
       ) : (
-        <ul className="dashboard-item-list">
+        <ul className={styles.itemList}>
           {items.map((item) => (
             <li
               key={`${item.type}-${item.id}`}
-              className={`dashboard-item dashboard-item-${variant}`}
+              className={`${styles.itemRow} ${styles[VARIANT_CLASS[variant]] ?? ''}`}
             >
               <div>
-                <p className="dashboard-item-meta">
-                  {TYPE_LABELS[item.type] ?? item.type}
-                  {item.status ? ` · ${item.status}` : ''}
+                <p className={styles.itemMeta}>
+                  {item.typeLabel}
+                  {' · '}
+                  {item.statusLabel}
                 </p>
 
-                <p className="dashboard-item-title">{item.title}</p>
+                <p className={styles.itemTitle}>{item.title}</p>
               </div>
 
-              <p className="dashboard-item-deadline">
-                {item.deadline ? `Due ${item.deadline}` : 'No deadline'}
-              </p>
+              <p className={styles.itemDeadline}>{item.deadlineLabel}</p>
             </li>
           ))}
         </ul>

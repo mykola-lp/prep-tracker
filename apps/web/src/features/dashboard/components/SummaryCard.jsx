@@ -1,9 +1,12 @@
+import styles from '../pages/dashboard.module.css';
+
 export function SummaryCard({ label, value, hint }) {
   return (
-    <article className="dashboard-card dashboard-summary-card">
-      <p className="dashboard-card-label">{label}</p>
-      <p className="dashboard-card-value">{value}</p>
-      {hint ? <p className="dashboard-card-hint">{hint}</p> : null}
+    <article className={styles.summaryCard}>
+      <p className={styles.summaryLabel}>{label}</p>
+      <p className={styles.summaryValue}>{value}</p>
+
+      {hint ? <p className={styles.summaryHint}>{hint}</p> : null}
     </article>
   );
 }
