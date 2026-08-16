@@ -10,7 +10,7 @@ const navItems = [
   { to: routePaths.notes, label: 'Notes' },
 ];
 
-export function AppLayout() {
+export function AppLayout({ children = null }) {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -49,9 +49,7 @@ export function AppLayout() {
           </button>
         </header>
 
-        <main className="app-content">
-          <Outlet />
-        </main>
+        <main className="app-content">{children ?? <Outlet />}</main>
       </div>
     </div>
   );

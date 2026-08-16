@@ -6,6 +6,8 @@ import { DELETE_TOPIC_MUTATION } from '../graphql/deleteTopicMutation';
 import { TOPICS_QUERY } from '../graphql/topicsQuery';
 import { UPDATE_TOPIC_MUTATION } from '../graphql/updateTopicMutation';
 
+import { ScreenState } from '@/components/ScreenState';
+
 import styles from './TopicsPage.module.css';
 
 const STATUS_OPTIONS = ['new', 'learning', 'reviewing', 'done'];
@@ -259,19 +261,31 @@ export function TopicsPage() {
             Your topics
           </h2>
 
-          {loading ? <div className={styles.loadingState}>Loading topics...</div> : null}
+          {loading ? (
+            <ScreenState
+              layout="inline"
+              tone="loading"
+              title="Loading topics..."
+              message="Fetching your topics and progress details."
+            />
+          ) : null}
 
           {error ? (
-            <div className={styles.emptyState} role="alert">
-              Unable to load topics. Please try again.
-            </div>
+            <ScreenState
+              layout="inline"
+              tone="error"
+              title="Unable to load topics."
+              message="Check your connection and try again. If the problem continues, refresh the page."
+            />
           ) : null}
 
           {!loading && !error && sortedTopics.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p className={styles.muted}>No topics yet.</p>
-              <p className={styles.muted}>Create your first topic to start organizing prep.</p>
-            </div>
+            <ScreenState
+              layout="inline"
+              tone="empty"
+              title="No topics yet."
+              message="Create your first topic to start organizing prep."
+            />
           ) : null}
 
           {!loading && !error && sortedTopics.length > 0 ? (

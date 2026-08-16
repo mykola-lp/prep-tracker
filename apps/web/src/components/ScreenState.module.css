@@ -1,0 +1,57 @@
+.page {
+  display: grid;
+  gap: 0;
+}
+
+.inline {
+  padding: 0;
+  align-items: start;
+  justify-items: start;
+}
+
+.page.full {
+  min-height: 40vh;
+  place-items: center;
+  padding: 24px 0;
+}
+
+.full {
+  align-items: center;
+  justify-items: center;
+}
+
+.card {
+  width: min(100%, 720px);
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: rgba(8, 15, 29, 0.68);
+  box-shadow: 0 20px 60px rgba(1, 7, 18, 0.3);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.message {
+  margin: 12px 0 0;
+  color: rgba(244, 247, 251, 0.76);
+}
+
+.action {
+  margin-top: 18px;
+}
+
+.loading {
+  border-color: rgba(133, 208, 255, 0.24);
+}
+
+.error {
+  border-color: rgba(255, 109, 109, 0.35);
+  background: rgba(255, 109, 109, 0.1);
+}
+
+.empty {
+  border-color: rgba(133, 208, 255, 0.16);
+}

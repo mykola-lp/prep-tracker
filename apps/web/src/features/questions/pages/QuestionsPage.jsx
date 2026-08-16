@@ -8,6 +8,8 @@ import { DELETE_QUESTION_MUTATION } from '../graphql/deleteQuestionMutation';
 import { QUESTIONS_QUERY } from '../graphql/questionsQuery';
 import { UPDATE_QUESTION_MUTATION } from '../graphql/updateQuestionMutation';
 
+import { ScreenState } from '@/components/ScreenState';
+
 import styles from './QuestionsPage.module.css';
 
 const STATUS_OPTIONS = ['new', 'learning', 'reviewing', 'done'];
@@ -192,19 +194,23 @@ export function QuestionsPage() {
 
   if (questionsLoading) {
     return (
-      <section className={styles.page}>
-        <div className={styles.loadingState}>Loading questions...</div>
-      </section>
+      <ScreenState
+        layout="inline"
+        tone="loading"
+        title="Loading questions..."
+        message="Fetching your questions and topic list."
+      />
     );
   }
 
   if (questionsError) {
     return (
-      <section className={styles.page}>
-        <div className={styles.error} role="alert">
-          Unable to load questions.
-        </div>
-      </section>
+      <ScreenState
+        layout="inline"
+        tone="error"
+        title="Unable to load questions."
+        message="Check your connection and try again. If the problem continues, refresh the page."
+      />
     );
   }
 
@@ -352,11 +358,20 @@ export function QuestionsPage() {
           ) : null}
 
           {!visibleQuestions.length ? (
-            <div className={styles.emptyState}>
-              {selectedTopicId === 'all'
-                ? 'No questions yet.'
-                : 'No questions for the selected topic yet.'}
-            </div>
+            <ScreenState
+              layout="inline"
+              tone="empty"
+              title={
+                selectedTopicId === 'all'
+                  ? 'No questions yet.'
+                  : 'No questions for the selected topic yet.'
+              }
+              message={
+                selectedTopicId === 'all'
+                  ? 'Add your first question to start tracking interview prompts.'
+                  : 'Create a question for the selected topic to see it here.'
+              }
+            />
           ) : (
             <div className={styles.list}>
               {visibleQuestions.map((question) => {
