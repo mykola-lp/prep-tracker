@@ -18,7 +18,8 @@
     "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
     "test:web": "npm run test --workspace @prep-tracker/web",
     "test:api": "npm run test --workspace @prep-tracker/api",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed:initial": "node scripts/initial-data-seed.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
