@@ -59,8 +59,9 @@ describe('TopicsPage', () => {
 
     render(<TopicsPage />);
 
-    expect(screen.getByText('Loading topics...')).toBeInTheDocument();
-    expect(screen.queryByText('No topics yet.')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Loading topics...' })).toBeInTheDocument();
+    expect(screen.getByText('Fetching your topics and progress details.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'No topics yet.' })).not.toBeInTheDocument();
   });
 
   it('shows an error state when topics fail to load', () => {
@@ -74,7 +75,12 @@ describe('TopicsPage', () => {
 
     render(<TopicsPage />);
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Unable to load topics.');
+    expect(screen.getByRole('heading', { name: 'Unable to load topics.' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Check your connection and try again. If the problem continues, refresh the page.'
+      )
+    ).toBeInTheDocument();
   });
 
   it('renders topics and lets the user create, edit, and delete topics', async () => {

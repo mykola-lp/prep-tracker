@@ -9,6 +9,8 @@ import { DELETE_NOTE_MUTATION } from '../graphql/deleteNoteMutation';
 import { NOTES_QUERY } from '../graphql/notesQuery';
 import { UPDATE_NOTE_MUTATION } from '../graphql/updateNoteMutation';
 
+import { ScreenState } from '@/components/ScreenState';
+
 import styles from './NotesPage.module.css';
 
 const emptyForm = {
@@ -167,19 +169,23 @@ export function NotesPage() {
 
   if (notesLoading) {
     return (
-      <section className={styles.page}>
-        <div className={styles.loadingState}>Loading notes...</div>
-      </section>
+      <ScreenState
+        layout="inline"
+        tone="loading"
+        title="Loading notes..."
+        message="Fetching your notes and linked topics."
+      />
     );
   }
 
   if (notesError) {
     return (
-      <section className={styles.page}>
-        <div className={styles.error} role="alert">
-          Unable to load notes.
-        </div>
-      </section>
+      <ScreenState
+        layout="inline"
+        tone="error"
+        title="Unable to load notes."
+        message="Check your connection and try again. If the problem continues, refresh the page."
+      />
     );
   }
 
@@ -296,9 +302,18 @@ export function NotesPage() {
           </div>
 
           {!visibleNotes.length ? (
-            <div className={styles.emptyState}>
-              {selectedParentType === 'all' ? 'No notes yet.' : 'No notes for this filter yet.'}
-            </div>
+            <ScreenState
+              layout="inline"
+              tone="empty"
+              title={
+                selectedParentType === 'all' ? 'No notes yet.' : 'No notes for this filter yet.'
+              }
+              message={
+                selectedParentType === 'all'
+                  ? 'Capture a note to keep answers and reminders in one place.'
+                  : 'Create a note that matches this filter to see it here.'
+              }
+            />
           ) : (
             <div className={styles.list}>
               {visibleNotes.map((note) => (

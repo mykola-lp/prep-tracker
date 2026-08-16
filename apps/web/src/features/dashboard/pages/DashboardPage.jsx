@@ -8,6 +8,8 @@ import { SummaryCard } from '../components/SummaryCard';
 import { StatusBreakdownList } from '../components/StatusBreakdownList';
 import { AttentionList } from '../components/AttentionList';
 
+import { ScreenState } from '@/components/ScreenState';
+
 import styles from './dashboard.module.css';
 
 export function DashboardPage() {
@@ -15,19 +17,23 @@ export function DashboardPage() {
 
   if (loading) {
     return (
-      <section className={styles.page}>
-        <div className={styles.stateCard}>Loading dashboard...</div>
-      </section>
+      <ScreenState
+        layout="inline"
+        tone="loading"
+        title="Loading dashboard..."
+        message="Fetching your progress summary and deadlines."
+      />
     );
   }
 
   if (error) {
     return (
-      <section className={styles.page}>
-        <div className={`${styles.stateCard} ${styles.stateCardError}`} role="alert">
-          Unable to load dashboard.
-        </div>
-      </section>
+      <ScreenState
+        layout="inline"
+        tone="error"
+        title="Unable to load dashboard."
+        message="Check your connection and try again. If the problem continues, refresh the page."
+      />
     );
   }
 
