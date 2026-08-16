@@ -37,7 +37,12 @@ describe('DashboardPage', () => {
 
     render(<DashboardPage />);
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Unable to load dashboard.');
+    expect(screen.getByRole('heading', { name: 'Unable to load dashboard.' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Check your connection and try again. If the problem continues, refresh the page.'
+      )
+    ).toBeInTheDocument();
   });
 
   it('renders summary data and attention items', () => {
