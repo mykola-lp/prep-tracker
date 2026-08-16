@@ -143,7 +143,7 @@ test.describe('auth flow', () => {
     await page.getByRole('button', { name: 'Create account' }).click();
 
     await expect(page).toHaveURL('/dashboard');
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Quick prep overview' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Logout' })).toBeVisible();
 
     const token = await page.evaluate(() => localStorage.getItem('token'));
@@ -174,7 +174,7 @@ test.describe('auth flow', () => {
     await page.getByRole('button', { name: 'Login' }).click();
 
     await expect(page).toHaveURL('/dashboard');
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Quick prep overview' })).toBeVisible();
 
     const token = await page.evaluate(() => localStorage.getItem('token'));
     expect(token).toBeTruthy();
