@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Umzug, SequelizeStorage } from 'umzug';
 
-import { DATABASE_URL, TEST_DATABASE_URL } from '../utils/config.js';
+import { DATABASE_URL } from '../utils/config.js';
 import { createSequelize } from '../utils/db.js';
 
 const migrationsPath = path.resolve(
@@ -10,10 +10,10 @@ const migrationsPath = path.resolve(
   '../../migrations/*.js'
 );
 
-const sequelize = createSequelize(TEST_DATABASE_URL || DATABASE_URL);
+const sequelize = createSequelize(DATABASE_URL);
 
 if (!sequelize) {
-  console.error('DATABASE_URL or TEST_DATABASE_URL is required to run migrations.');
+  console.error('DATABASE_URL is required to run migrations.');
   process.exit(1);
 }
 

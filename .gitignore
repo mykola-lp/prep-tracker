@@ -18,7 +18,6 @@ blob-report
 
 .env
 .env.local
-.env.aiven-dev
 data/
 
 # Editor directories and files

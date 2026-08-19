@@ -19,7 +19,10 @@
     "test:web": "npm run test --workspace @prep-tracker/web",
     "test:api": "npm run test --workspace @prep-tracker/api",
     "test:e2e": "playwright test",
-    "seed": "node scripts/initial-data-seed.js"
+    "seed": "node scripts/initial-data-seed.js",
+    "docker:local": "docker compose -f docker-compose.dev.yml --env-file .env.local --profile local-db up",
+    "docker:aiven": "docker compose -f docker-compose.dev.yml --env-file .env.local up",
+    "docker:prod": "docker compose -f docker-compose.yml --env-file .env up -d --build"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",

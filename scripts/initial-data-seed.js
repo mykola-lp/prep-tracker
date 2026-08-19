@@ -1,72 +1,21 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 
+import { DATABASE_URL } from '../apps/api/src/utils/config.js';
 import { createSequelize } from '../apps/api/src/utils/db.js';
+
 import { initModels } from '../apps/api/src/models/index.js';
-
-loadEnvironment();
-
-const connectionString = buildDatabaseUrl();
-
-if (!connectionString) {
-  throw new Error('Database configuration is missing');
-}
 
 if (process.env.SEED_ALLOW_DESTRUCTIVE !== 'true') {
   throw new Error('Destructive seed is disabled. Set SEED_ALLOW_DESTRUCTIVE=true to continue.');
 }
 
-const sequelize = createSequelize(connectionString);
+const sequelize = createSequelize(DATABASE_URL);
 
 if (!sequelize) {
   throw new Error('Failed to initialize database connection');
 }
 
 const models = initModels(sequelize);
-
-function loadEnvironment() {
-  const envFile = process.env.ENV_FILE;
-
-  if (!envFile) {
-    return;
-  }
-
-  const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-
-  const envPath = path.isAbsolute(envFile) ? envFile : path.join(projectRoot, envFile);
-
-  if (!fs.existsSync(envPath)) {
-    throw new Error(`ENV_FILE not found: ${envFile}`);
-  }
-
-  dotenv.config({ path: envPath });
-}
-
-function buildDatabaseUrl() {
-  const {
-    DB_LOCAL_HOST = 'localhost',
-    DB_PORT = '5432',
-    DB_USER,
-    DB_PASSWORD,
-    DB_NAME,
-    DB_SSLMODE,
-  } = process.env;
-
-  if (!DB_USER || !DB_PASSWORD || !DB_NAME) {
-    return undefined;
-  }
-
-  const host = DB_LOCAL_HOST;
-  const credentials = `${encodeURIComponent(DB_USER)}:${encodeURIComponent(DB_PASSWORD)}`;
-  const database = `/${DB_NAME}`;
-  const sslMode = DB_SSLMODE ? `?sslmode=${DB_SSLMODE}` : '';
-
-  return `postgresql://${credentials}@${host}:${DB_PORT}${database}${sslMode}`;
-}
 
 const rng = createSeededRandom(41);
 

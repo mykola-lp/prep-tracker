@@ -8,16 +8,20 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 loadEnvironment();
 
 export const DATABASE_URL = buildDatabaseUrl();
-export const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL;
-
 export const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
-
 export const PORT = Number(process.env.PORT) || 3001;
-
 export const JWT_SECRET = process.env.JWT_SECRET;
 
+if (!DATABASE_URL) {
+  throw new Error(
+    'DATABASE_URL could not be resolved. Did you forget to set ENV_FILE (e.g. ENV_FILE=.env.local or ENV_FILE=.env.test)?'
+  );
+}
+
+logDbTarget(DATABASE_URL);
+
 function loadEnvironment() {
-  if (process.env.DATABASE_URL || process.env.TEST_DATABASE_URL) {
+  if (process.env.DATABASE_URL) {
     return;
   }
 
@@ -58,9 +62,17 @@ function buildDatabaseUrl() {
   }
 
   const credentials = `${encodeURIComponent(DB_USER)}:${encodeURIComponent(DB_PASSWORD)}`;
-
   const database = `/${DB_NAME}`;
   const sslMode = DB_SSLMODE ? `?sslmode=${DB_SSLMODE}` : '';
 
   return `postgresql://${credentials}@${host}:${DB_PORT}${database}${sslMode}`;
+}
+
+function logDbTarget(databaseUrl) {
+  try {
+    const url = new URL(databaseUrl);
+    console.log(`[db] connecting to ${url.hostname}:${url.port}${url.pathname}`);
+  } catch {
+    console.log('[db] DATABASE_URL is set but could not be parsed for logging');
+  }
 }
