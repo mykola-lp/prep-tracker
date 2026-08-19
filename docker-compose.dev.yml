@@ -11,9 +11,9 @@ services:
       - /workspace/node_modules
     environment:
       CHOKIDAR_USEPOLLING: 'true'
-      VITE_API_PROXY_TARGET: ${DEV_VITE_API_PROXY_TARGET}
+      VITE_API_PROXY_TARGET: ${VITE_API_PROXY_TARGET}
     ports:
-      - '${DEV_WEB_PORT:-5173}:5173'
+      - '${WEB_PORT}:5173'
     networks:
       - prep-tracker-network
 
@@ -26,12 +26,18 @@ services:
       - .:/workspace
       - /workspace/node_modules
     environment:
-      PORT: ${DEV_API_PORT:-3001}
-      CLIENT_ORIGIN: http://localhost:${DEV_NGINX_PORT:-8080}
-      DATABASE_URL: ${DEV_DATABASE_URL}
+      PORT: ${API_PORT}
+      CLIENT_ORIGIN: http://localhost:${NGINX_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SSLMODE: ${DB_SSLMODE}
       JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: ${NODE_ENV}
     ports:
-      - '${DEV_API_PORT:-3001}:${DEV_API_PORT:-3001}'
+      - '${API_PORT}:${API_PORT}'
     networks:
       - prep-tracker-network
 
@@ -40,11 +46,11 @@ services:
     profiles:
       - local-db
     ports:
-      - '${DEV_POSTGRES_PORT:-5432}:5432'
+      - '${DB_PORT}:5432'
     environment:
-      POSTGRES_USER: ${DEV_POSTGRES_USER:-prep_tracker_dev}
-      POSTGRES_PASSWORD: ${DEV_POSTGRES_PASSWORD:-prep_tracker_dev}
-      POSTGRES_DB: ${DEV_POSTGRES_DB:-prep_tracker_dev}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - ./data/docker/dev/postgres:/var/lib/postgresql/data
     restart: unless-stopped
@@ -55,7 +61,7 @@ services:
     image: nginx:1.29-alpine
     container_name: prep-tracker-dev-reverse-proxy
     ports:
-      - '${DEV_NGINX_PORT:-8080}:80'
+      - '${NGINX_PORT}:80'
     volumes:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
     depends_on:

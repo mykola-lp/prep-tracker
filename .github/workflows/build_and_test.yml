@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TEST_DATABASE_URL: postgres://prep_tracker_test:prep_tracker_test@localhost:5432/prep_tracker_test
+      DATABASE_URL: postgres://prep_tracker_test:prep_tracker_test@localhost:5432/prep_tracker_test
       JWT_SECRET: super_secret_key_123
 
     services:

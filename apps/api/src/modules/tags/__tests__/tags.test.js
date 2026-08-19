@@ -5,7 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../app.js';
 import { initModels } from '../../../models/index.js';
 
-import { DATABASE_URL, TEST_DATABASE_URL } from '../../../utils/config.js';
+import { DATABASE_URL } from '../../../utils/config.js';
 import { createSequelize } from '../../../utils/db.js';
 
 const REGISTER_MUTATION = `#graphql
@@ -237,11 +237,11 @@ async function createNote(token, input = {}) {
 }
 
 beforeAll(async () => {
-  sequelize = createSequelize(TEST_DATABASE_URL || DATABASE_URL);
+  sequelize = createSequelize(DATABASE_URL);
 
   if (!sequelize) {
     throw new Error(
-      'Failed to initialize database connection. TEST_DATABASE_URL or DATABASE_URL may be missing or invalid.'
+      'Failed to initialize database connection. DATABASE_URL may be missing or invalid.'
     );
   }
 
