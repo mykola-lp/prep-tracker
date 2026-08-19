@@ -4,12 +4,18 @@ import bcrypt from 'bcrypt';
 import { createSequelize } from '../apps/api/src/utils/db.js';
 import { initModels } from '../apps/api/src/models/index.js';
 
-dotenv.config({ path: '.env.aiven-dev' });
+dotenv.config({
+  path: process.env.ENV_FILE || '.env',
+});
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error('DATABASE_URL is missing');
+}
+
+if (process.env.SEED_ALLOW_DESTRUCTIVE !== 'true') {
+  throw new Error('Destructive seed is disabled. Set SEED_ALLOW_DESTRUCTIVE=true to continue.');
 }
 
 const sequelize = createSequelize(connectionString);
@@ -72,6 +78,8 @@ const statusPool = ['new', 'learning', 'reviewing', 'done'];
 
 const deadlineOffsets = [3, 5, 7, 10, 14, 18, 21, 28, 35, 42];
 
+const usedDisplayNames = new Set();
+
 async function clearDatabase() {
   console.log('Clearing database...');
 
@@ -97,7 +105,7 @@ async function seedUsers() {
   const users = Array.from({ length: 5 }, (_, index) => ({
     email: `user${index + 1}@prep-tracker.dev`,
     passwordHash,
-    displayName: `${pick(firstNames)} ${pick(lastNames)}`,
+    displayName: uniqueDisplayName(),
   }));
 
   const insertedUsers = await models.User.bulkCreate(users, {
@@ -320,6 +328,18 @@ async function seed() {
   await sequelize.close();
 
   console.log('✅ Seed completed');
+}
+
+function uniqueDisplayName() {
+  let name;
+
+  do {
+    name = `${pick(firstNames)} ${pick(lastNames)}`;
+  } while (usedDisplayNames.has(name));
+
+  usedDisplayNames.add(name);
+
+  return name;
 }
 
 function createSeededRandom(seed) {
