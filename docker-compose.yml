@@ -8,52 +8,57 @@ services:
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL}
     image: prep-tracker-web-prod
-    restart: unless-stopped
     networks:
       - prep-tracker-network
+    restart: unless-stopped
 
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    image: prep-tracker-api-prod
-    restart: unless-stopped
+    depends_on:
+      - postgres
     environment:
       PORT: ${API_PORT}
       CLIENT_ORIGIN: http://localhost:${NGINX_PORT}
-      DATABASE_URL: ${DATABASE_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SSLMODE: ${DB_SSLMODE}
       JWT_SECRET: ${JWT_SECRET}
-      NODE_ENV: production
-    depends_on:
-      - postgres
+      NODE_ENV: ${NODE_ENV}
+    image: prep-tracker-api-prod
     networks:
       - prep-tracker-network
+    restart: unless-stopped
 
   postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - ./data/docker/prod/postgres:/var/lib/postgresql/data
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    image: postgres:16-alpine
     networks:
       - prep-tracker-network
+    restart: unless-stopped
+    volumes:
+      - ./data/docker/prod/postgres:/var/lib/postgresql/data
 
   nginx:
-    image: nginx:1.29-alpine
     container_name: prep-tracker-prod-reverse-proxy
-    restart: unless-stopped
-    ports:
-      - '${NGINX_PORT}:80'
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - web
       - api
+    image: nginx:1.29-alpine
     networks:
       - prep-tracker-network
+    ports:
+      - '${NGINX_PORT}:80'
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
 networks:
   prep-tracker-network:
