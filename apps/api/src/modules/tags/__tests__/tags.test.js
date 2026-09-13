@@ -450,6 +450,9 @@ describe('Tags GraphQL', () => {
     expect(response.body.errors).toBeUndefined();
     expect(response.body.data.topics).toHaveLength(1);
     expect(response.body.data.topics[0].id).toBe(topicA.id);
+
+    expect(response.body.data.topics[0].id).toBe(topicA.id);
+    expect(response.body.data.topics.map((topic) => topic.id)).not.toContain(topicB.id);
   });
 
   it('filters topics by status', async () => {

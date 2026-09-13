@@ -1,4 +1,4 @@
-import { requireAuth, findOwnedRecord, NotFoundError } from '../auth/authorization.js';
+import { requireAuth, findOwnedRecord } from '../auth/authorization.js';
 
 import { buildTagFilterInclude } from '../tags/filters.js';
 
