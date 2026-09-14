@@ -3,8 +3,10 @@ import { HttpLink } from '@apollo/client/link/http';
 
 import { authLink } from './authLink';
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const httpLink = new HttpLink({
-  uri: import.meta.env.VITE_API_BASE_URL || '/api/graphql',
+  uri: `${apiBaseUrl.replace(/\/$/, '')}/graphql`,
 });
 
 export const apolloClient = new ApolloClient({

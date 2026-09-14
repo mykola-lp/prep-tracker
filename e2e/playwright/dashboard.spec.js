@@ -76,6 +76,25 @@ const CREATE_NOTE_MUTATION = `#graphql
   }
 `;
 
+function dateInKyiv(daysFromToday) {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + daysFromToday);
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Kyiv',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const values = Object.fromEntries(
+    parts
+      .filter((part) => ['year', 'month', 'day'].includes(part.type))
+      .map((part) => [part.type, part.value])
+  );
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 async function registerUser(request, user) {
   const response = await request.post('/api/graphql', {
     data: {
@@ -205,6 +224,12 @@ test.describe('dashboard flow', () => {
   test('shows summary metrics and attention items for the current user', async ({ page }) => {
     const email = `dashboard-${randomUUID()}@example.com`;
     const password = 'password123';
+    const overdueTopicDeadline = dateInKyiv(-2);
+    const overdueQuestionDeadline = dateInKyiv(-3);
+    const reviewTopicDeadline = dateInKyiv(2);
+    const reviewQuestionDeadline = dateInKyiv(3);
+    const upcomingTopicDeadline = dateInKyiv(9);
+    const upcomingQuestionDeadline = dateInKyiv(11);
     const user = await registerUser(page.request, {
       email,
       password,
@@ -214,33 +239,33 @@ test.describe('dashboard flow', () => {
     const overdueTopic = await createTopic(page.request, user.token, {
       title: 'Algorithms',
       description: 'Core problem solving',
-      deadline: '2026-08-10',
+      deadline: overdueTopicDeadline,
     });
     const reviewTopic = await createTopic(page.request, user.token, {
       title: 'React',
       description: 'Hooks and rendering',
-      deadline: '2026-08-25',
+      deadline: reviewTopicDeadline,
     });
     const upcomingTopic = await createTopic(page.request, user.token, {
       title: 'Databases',
       description: 'Modeling and queries',
-      deadline: '2026-09-01',
+      deadline: upcomingTopicDeadline,
     });
 
     const overdueQuestion = await createQuestion(page.request, user.token, {
       topicId: overdueTopic.id,
       prompt: 'What is dynamic programming?',
-      deadline: '2026-08-09',
+      deadline: overdueQuestionDeadline,
     });
     const reviewQuestion = await createQuestion(page.request, user.token, {
       topicId: reviewTopic.id,
       prompt: 'How do hooks work?',
-      deadline: '2026-08-26',
+      deadline: reviewQuestionDeadline,
     });
     await createQuestion(page.request, user.token, {
       topicId: upcomingTopic.id,
       prompt: 'What is indexing?',
-      deadline: '2026-09-03',
+      deadline: upcomingQuestionDeadline,
     });
 
     await updateTopic(page.request, user.token, overdueTopic.id, {
@@ -328,24 +353,36 @@ test.describe('dashboard flow', () => {
     await expect(
       overdueItemsCard.getByText('What is dynamic programming?', { exact: true })
     ).toBeVisible();
-    await expect(overdueItemsCard.getByText('Due 2026-08-10', { exact: true })).toBeVisible();
-    await expect(overdueItemsCard.getByText('Due 2026-08-09', { exact: true })).toBeVisible();
+    await expect(
+      overdueItemsCard.getByText(`Due ${overdueTopicDeadline}`, { exact: true })
+    ).toBeVisible();
+    await expect(
+      overdueItemsCard.getByText(`Due ${overdueQuestionDeadline}`, { exact: true })
+    ).toBeVisible();
     await expect(overdueItemsCard.getByText('Topic · Learning', { exact: true })).toBeVisible();
     await expect(overdueItemsCard.getByText('Question · Learning', { exact: true })).toBeVisible();
 
     const reviewItemsCard = page.getByRole('heading', { name: 'Review' }).locator('..');
     await expect(reviewItemsCard.getByText('React', { exact: true })).toBeVisible();
     await expect(reviewItemsCard.getByText('How do hooks work?', { exact: true })).toBeVisible();
-    await expect(reviewItemsCard.getByText('Due 2026-08-25', { exact: true })).toBeVisible();
-    await expect(reviewItemsCard.getByText('Due 2026-08-26', { exact: true })).toBeVisible();
+    await expect(
+      reviewItemsCard.getByText(`Due ${reviewTopicDeadline}`, { exact: true })
+    ).toBeVisible();
+    await expect(
+      reviewItemsCard.getByText(`Due ${reviewQuestionDeadline}`, { exact: true })
+    ).toBeVisible();
     await expect(reviewItemsCard.getByText('Topic · Reviewing', { exact: true })).toBeVisible();
     await expect(reviewItemsCard.getByText('Question · Reviewing', { exact: true })).toBeVisible();
 
     const upcomingItemsCard = page.getByRole('heading', { name: 'Upcoming' }).locator('..');
     await expect(upcomingItemsCard.getByText('Databases', { exact: true })).toBeVisible();
     await expect(upcomingItemsCard.getByText('What is indexing?', { exact: true })).toBeVisible();
-    await expect(upcomingItemsCard.getByText('Due 2026-09-01', { exact: true })).toBeVisible();
-    await expect(upcomingItemsCard.getByText('Due 2026-09-03', { exact: true })).toBeVisible();
+    await expect(
+      upcomingItemsCard.getByText(`Due ${upcomingTopicDeadline}`, { exact: true })
+    ).toBeVisible();
+    await expect(
+      upcomingItemsCard.getByText(`Due ${upcomingQuestionDeadline}`, { exact: true })
+    ).toBeVisible();
     await expect(upcomingItemsCard.getByText('Topic · New', { exact: true })).toBeVisible();
     await expect(upcomingItemsCard.getByText('Question · New', { exact: true })).toBeVisible();
   });

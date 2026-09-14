@@ -66,7 +66,7 @@ export const topicResolvers = {
       });
     },
 
-    tags: async (topic, _, context) => {
+    tags: async (topic, _, _context) => {
       return topic.getTags();
     },
   },

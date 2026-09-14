@@ -55,8 +55,11 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
-      - name: Check style
+      - name: Lint frontend
         run: npm run lint --workspace @prep-tracker/web
+
+      - name: Lint API
+        run: npm run lint --workspace @prep-tracker/api
 
       - name: Test unit
         run: |
