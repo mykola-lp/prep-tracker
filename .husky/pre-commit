@@ -2,3 +2,4 @@
 
 sh scripts/git/validate-branch-name.sh
 sh scripts/git/validate-formatting.sh
+sh scripts/git/validate-css.sh
