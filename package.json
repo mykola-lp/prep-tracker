@@ -22,7 +22,9 @@
     "seed": "node scripts/initial-data-seed.js",
     "docker:local": "docker compose -f docker-compose.dev.yml --env-file .env.local --profile local-db up",
     "docker:aiven": "docker compose -f docker-compose.dev.yml --env-file .env.local up",
-    "docker:prod": "docker compose -f docker-compose.yml --env-file .env up -d --build"
+    "docker:prod": "docker compose -f docker-compose.yml --env-file .env up -d --build",
+    "lint:css": "stylelint \"apps/web/src/**/*.css\"",
+    "lint:css:fix": "stylelint \"apps/web/src/**/*.css\" --fix"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
@@ -37,7 +39,11 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "stylelint": "^17.16.0",
+    "stylelint-config-recess-order": "^7.8.2",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^8.1.2"
   },
   "dependencies": {
     "@apollo/server": "^5.5.1",

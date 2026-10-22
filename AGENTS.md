@@ -83,6 +83,10 @@ For tasks involving new frontend UI or substantial visual redesigns:
 - Treat reference materials as guidance, not templates to copy.
 - Keep changes scoped to the requested UI. Do not refactor global styling
   architecture unless the task explicitly requires it.
+- Follow `docs/frontend/css-conventions.md` for CSS architecture,
+  class naming, property ordering, and layout decisions.
+- Use CUBE CSS principles; do not use BEM naming.
+- Run `npm run lint:css` when changing frontend styles.
 
 ## Backend Conventions
 
