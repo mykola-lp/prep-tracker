@@ -67,6 +67,23 @@ Use the root scripts from `package.json`:
 - Keep shared UI styling in `apps/web/src/styles.css` unless a new pattern justifies extraction.
 - If a UI change affects loading, error, or empty states, cover that path in a test.
 
+## Frontend Design Guidance
+
+For tasks involving new frontend UI or substantial visual redesigns:
+
+- Use the `frontend-design` skill from `.agents/skills/frontend-design/SKILL.md`.
+  Claude Code also has a mirrored copy at
+  `.claude/skills/frontend-design/SKILL.md`.
+- Consult `docs/references/frontend-aesthetics/prompting_for_frontend_aesthetics.ipynb`
+  when planning the visual direction and implementation approach.
+- Before implementation, establish a product-specific direction for typography,
+  colors, composition, motion, and visual identity.
+- Critique the proposed design against the brief and avoid generic AI-generated
+  patterns unless they are justified by the actual product requirements.
+- Treat reference materials as guidance, not templates to copy.
+- Keep changes scoped to the requested UI. Do not refactor global styling
+  architecture unless the task explicitly requires it.
+
 ## Backend Conventions
 
 - Keep the API entrypoint small and defer logic to helpers where possible.
