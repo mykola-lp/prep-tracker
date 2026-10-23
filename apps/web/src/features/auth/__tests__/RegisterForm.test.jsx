@@ -44,6 +44,12 @@ describe('RegisterForm', () => {
     vi.clearAllMocks();
   });
 
+  it('links back to the marketing home page', () => {
+    render(<RegisterForm />);
+
+    expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/');
+  });
+
   it('shows a validation error when password is missing', async () => {
     render(<RegisterForm />);
 
