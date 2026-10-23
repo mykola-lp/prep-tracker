@@ -9,22 +9,11 @@ export default {
   ignoreFiles: ['**/node_modules/**', '**/dist/**'],
 
   rules: {
-    'at-rule-no-unknown': [
-      true,
-      {
-        ignoreAtRules: [
-          'theme',
-          'source',
-          'utility',
-          'variant',
-          'custom-variant',
-          'apply',
-          'reference',
-          'config',
-          'plugin',
-        ],
-      },
-    ],
+    'declaration-empty-line-before': null,
+
+    // CSS Modules use camelCase; global classes use lowercase kebab-case.
+    // This avoids BEM element and modifier separators.
+    'selector-class-pattern': '^(?:[a-z][a-zA-Z0-9]*|[a-z][a-z0-9]*(?:-[a-z0-9]+)*)$',
 
     'order/properties-order': propertyGroups.map((group) => ({
       ...group,
