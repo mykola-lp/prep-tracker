@@ -45,6 +45,12 @@ describe('LoginForm', () => {
     vi.clearAllMocks();
   });
 
+  it('links back to the marketing home page', () => {
+    render(<LoginForm />);
+
+    expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/');
+  });
+
   it('shows a validation error when email is missing', async () => {
     render(<LoginForm />);
 

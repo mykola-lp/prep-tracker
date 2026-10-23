@@ -1,0 +1,53 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  font-family: var(--font-family-body);
+  font-weight: 400;
+
+  line-height: 1.5;
+
+  color: var(--color-text);
+
+  background: var(--color-background-start);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+
+  margin: 0;
+
+  background:
+    radial-gradient(circle at top, var(--color-background-glow), transparent 40%),
+    linear-gradient(
+      135deg,
+      var(--color-background-start) 0%,
+      var(--color-background-middle) 55%,
+      var(--color-background-end) 100%
+    );
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+
+  text-decoration: none;
+}

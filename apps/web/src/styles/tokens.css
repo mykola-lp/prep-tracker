@@ -1,0 +1,55 @@
+:root {
+  /* Typography */
+  --font-family-body: 'Space Grotesk', 'Segoe UI', sans-serif;
+
+  /* Core text colors */
+  --color-text: #f4f7fb;
+  --color-text-strong: #fff;
+  --color-text-muted-82: rgb(244 247 251 / 82%);
+  --color-text-muted-78: rgb(244 247 251 / 78%);
+  --color-text-muted-76: rgb(244 247 251 / 76%);
+  --color-text-muted-74: rgb(244 247 251 / 74%);
+  --color-text-muted-72: rgb(244 247 251 / 72%);
+  --color-text-muted-66: rgb(244 247 251 / 66%);
+  --color-text-muted-64: rgb(244 247 251 / 64%);
+  --color-text-muted-50: rgb(244 247 251 / 50%);
+  --color-text-muted-45: rgb(244 247 251 / 45%);
+
+  /* Surfaces and borders */
+  --color-surface: rgb(8 15 29 / 68%);
+  --color-surface-raised: rgb(8 15 29 / 74%);
+  --color-surface-overlay: rgb(8 15 29 / 56%);
+  --color-surface-control: rgb(255 255 255 / 8%);
+  --color-surface-subtle: rgb(255 255 255 / 4%);
+  --color-border: rgb(255 255 255 / 10%);
+  --color-border-strong: rgb(255 255 255 / 12%);
+
+  /* Accent */
+  --color-accent: #85d0ff;
+  --color-accent-surface: rgb(133 208 255 / 16%);
+  --color-accent-surface-hover: rgb(133 208 255 / 24%);
+  --color-accent-surface-subtle: rgb(133 208 255 / 14%);
+  --color-accent-surface-strong: rgb(133 208 255 / 20%);
+  --color-accent-border: rgb(133 208 255 / 34%);
+  --color-accent-border-strong: rgb(133 208 255 / 50%);
+
+  /* Feedback */
+  --color-danger-text: #ffd4d4;
+  --color-danger-border: rgb(255 109 109 / 35%);
+  --color-danger-surface: rgb(255 109 109 / 10%);
+  --color-danger-surface-soft: rgb(255 109 109 / 12%);
+  --color-danger-surface-strong: rgb(255 109 109 / 18%);
+  --color-warning: #ffe082;
+
+  /* Shadows and page background */
+  --color-shadow: rgb(1 7 18 / 45%);
+  --color-shadow-soft: rgb(1 7 18 / 30%);
+  --color-background-glow: rgb(88 166 255 / 35%);
+  --color-background-start: #09111f;
+  --color-background-middle: #14233a;
+  --color-background-end: #1f3250;
+
+  /* Shared layout values */
+  --layout-sidebar-width: 240px;
+  --layout-content-width: 1120px;
+}

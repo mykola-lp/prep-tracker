@@ -68,6 +68,11 @@ export function LoginForm() {
   return (
     <main className={styles.shell}>
       <section className={styles.card}>
+        <Link className={styles.backLink} to={routePaths.home}>
+          <span aria-hidden="true">←</span>
+          Back to home
+        </Link>
+
         <p className={styles.eyebrow}>Prep Tracker</p>
 
         <h1 className={styles.title}>Sign in</h1>

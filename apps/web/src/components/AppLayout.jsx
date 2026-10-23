@@ -3,6 +3,8 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { routePaths } from '@/app/router/routePaths';
 import { useAuthStore } from '@/features/auth/store/authStore';
 
+import styles from './AppLayout.module.css';
+
 const navItems = [
   { to: routePaths.dashboard, label: 'Dashboard' },
   { to: routePaths.topics, label: 'Topics' },
@@ -20,36 +22,40 @@ export function AppLayout({ children = null }) {
     navigate(routePaths.login);
   }
 
+  function getNavLinkClassName({ isActive }) {
+    return isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink;
+  }
+
   return (
-    <div className="app-shell">
-      <aside className="app-sidebar">
-        <div className="app-brand">
-          <span className="app-brand-mark">PT</span>
-          <span className="app-brand-name">Prep Tracker</span>
+    <div className={styles.shell}>
+      <aside className={styles.sidebar}>
+        <div className={styles.brand}>
+          <span className={styles.brandMark}>PT</span>
+          <span className={styles.brandName}>Prep Tracker</span>
         </div>
 
-        <nav className="app-nav" aria-label="Main navigation">
+        <nav className={styles.nav} aria-label="Main navigation">
           {navItems.map((item) => (
-            <NavLink key={item.to} to={item.to} className="app-nav-link">
+            <NavLink key={item.to} to={item.to} className={getNavLinkClassName}>
               {item.label}
             </NavLink>
           ))}
         </nav>
       </aside>
 
-      <div className="app-main-shell">
-        <header className="app-header">
+      <div className={styles.main}>
+        <header className={styles.header}>
           <div>
-            <p className="app-header-kicker">Workspace</p>
-            <p className="app-header-user">{user?.email}</p>
+            <p className={styles.headerKicker}>Workspace</p>
+            <p className={styles.headerUser}>{user?.email}</p>
           </div>
 
-          <button className="app-logout-button" type="button" onClick={handleLogout}>
+          <button className={styles.logoutButton} type="button" onClick={handleLogout}>
             Logout
           </button>
         </header>
 
-        <main className="app-content">{children ?? <Outlet />}</main>
+        <main className={styles.content}>{children ?? <Outlet />}</main>
       </div>
     </div>
   );
