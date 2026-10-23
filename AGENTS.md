@@ -61,11 +61,77 @@ Use the root scripts from `package.json`:
 - Do not rename public scripts or file locations without a strong reason.
 - Preserve the current monorepo layout unless the task explicitly requires a move.
 
+## React and JSX Readability
+
+### Formatting
+
+- Follow the repository's Prettier configuration.
+- Format changed files with Prettier instead of manually adjusting formatting.
+- Prefer readable JSX over unnecessarily long lines.
+- Keep multiline JSX attributes consistently formatted.
+- Do not add whitespace or line breaks that conflict with Prettier.
+
+### Component Structure
+
+- Give each component one clear responsibility.
+- Keep the main page component focused on composing the page's major sections.
+- Extract substantial, logically independent sections into named components when doing so improves readability and navigation.
+- Keep small, closely related components in the same file when this remains easy to navigate.
+- Do not create a separate component or file for every wrapper, heading, or minor markup element.
+- Declare React components at module scope, not inside other components.
+- Keep static data separate from rendering logic when this makes the component easier to understand.
+- Keep related behavior close to the component responsible for that behavior.
+
+### JSX Organization
+
+- Group imports, constants, helper functions, and exported components in a consistent order.
+- Separate logically distinct blocks with blank lines.
+- Use semantic HTML elements according to their purpose.
+- Keep nested JSX indentation consistent.
+- Break up large JSX structures into meaningful components rather than relying on excessive comments.
+- Avoid deeply nested conditional expressions and unnecessarily complex inline logic.
+
+### Comments
+
+- Use comments to explain non-obvious decisions, constraints, and reasons.
+- Use section comments only when they improve navigation through a large file.
+- Do not add comments that merely repeat the name or purpose of an obvious element.
+- Prefer descriptive component and variable names over explanatory comments.
+
+### Scope and Maintainability
+
+- Preserve existing behavior, routes, authentication, accessibility, and styling contracts during refactoring.
+- Avoid unrelated changes.
+- Do not introduce unnecessary abstractions or split components without a clear readability benefit.
+- After changing JSX, run Prettier, ESLint, and the relevant tests.
+- Review the final code for readability and component responsibilities, not only for passing formatters and linters.
+
 ## Frontend Conventions
 
 - Use React function components and hooks.
 - Keep shared UI styling in `apps/web/src/styles.css` unless a new pattern justifies extraction.
 - If a UI change affects loading, error, or empty states, cover that path in a test.
+
+## Frontend Design Guidance
+
+For tasks involving new frontend UI or substantial visual redesigns:
+
+- Use the `frontend-design` skill from `.agents/skills/frontend-design/SKILL.md`.
+  Claude Code also has a mirrored copy at
+  `.claude/skills/frontend-design/SKILL.md`.
+- Consult `docs/references/frontend-aesthetics/prompting_for_frontend_aesthetics.ipynb`
+  when planning the visual direction and implementation approach.
+- Before implementation, establish a product-specific direction for typography,
+  colors, composition, motion, and visual identity.
+- Critique the proposed design against the brief and avoid generic AI-generated
+  patterns unless they are justified by the actual product requirements.
+- Treat reference materials as guidance, not templates to copy.
+- Keep changes scoped to the requested UI. Do not refactor global styling
+  architecture unless the task explicitly requires it.
+- Follow `docs/frontend/css-conventions.md` for CSS architecture,
+  class naming, property ordering, and layout decisions.
+- Use CUBE CSS principles; do not use BEM naming.
+- Run `npm run lint:css` when changing frontend styles.
 
 ## Backend Conventions
 

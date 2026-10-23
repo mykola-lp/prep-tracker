@@ -5,12 +5,15 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import prettierConfig from 'eslint-config-prettier';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import htmlReact from '@html-eslint/eslint-plugin-react';
 
 export default defineConfig([
   {
     ignores: ['dist'],
   },
   {
+    ...jsxA11y.flatConfigs.recommended,
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
@@ -33,6 +36,7 @@ export default defineConfig([
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      '@html-eslint/react': htmlReact,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -42,6 +46,13 @@ export default defineConfig([
       'react/prop-types': 'off',
       'react-refresh/only-export-components': 'off',
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@html-eslint/react/no-invalid-attr-value': 'error',
+      '@html-eslint/react/use-baseline': 'error',
+      '@html-eslint/react/no-ineffective-attrs': 'error',
+      '@html-eslint/react/no-obsolete-tags': 'error',
+      '@html-eslint/react/no-obsolete-attrs': 'error',
+      '@html-eslint/react/classname-spacing': 'error',
+      '@html-eslint/react/no-duplicate-classname': 'error',
     },
   },
   {
